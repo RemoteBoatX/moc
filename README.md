@@ -31,3 +31,17 @@ First, you need to set up the following tools:
 To run the application from the command line, first run `mvn install` and then
 `mvn spring-boot:run`. You can test the application at
 [localhost:8080/greeting](http://localhost:8080/greeting).
+
+### Run app with Docker
+
+To run the app with Docker follow these standard steps:
+
+1. `docker build -t moc-server .`
+2. `docker run -p 8080:8080 moc-server`
+
+## Spring WebSockets
+
+Here are some useful tutorials for WebSockets in Spring:
+
+* [SpringHow: Introduction to WebSocket with Spring Boot](https://springhow.com/spring-boot-websocket/)
+* [Java in use: Spring Boot + WebSocket Simple Example](https://www.javainuse.com/spring/boot-websocket)
