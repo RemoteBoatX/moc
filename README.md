@@ -16,7 +16,11 @@ HTTP GET requests to the path `/greeting`.
 
 ### Requirements
 
-First, you need to set up the following tools:
+To run the server as a Docker container, you only need to download
+[Docker](https://www.docker.com/get-started).
+
+If you want to run the server on you machine, you need to set up the following
+tools:
 
 * Install a Java Development Kit (JDK) for Java 11 such as
   [AdoptOpenJDK](https://adoptopenjdk.net/).
@@ -30,14 +34,15 @@ First, you need to set up the following tools:
 
 To run the application from the command line, first run `mvn install` and then
 `mvn spring-boot:run`. You can test the application at
-[localhost:8080/greeting](http://localhost:8080/greeting).
+[localhost:8080/greeting](http://localhost:8080/greeting) and access the
+WebSocket endpoint at [localhost:8080/ws](ws://localhost:8080/ws).
 
 ### Run app with Docker
 
-To run the app with Docker follow these standard steps:
+Alternatively, to run the app with Docker follow these standard steps:
 
 1. `docker build -t moc-server .`
-2. `docker run -p 8080:8080 moc-server`
+2. `docker run --rm -p 8080:8080 moc-server`
 
 ## Spring WebSockets
 
