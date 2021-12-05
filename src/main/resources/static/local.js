@@ -1,7 +1,7 @@
 let ws;
 
 function connect() {
-    ws = new WebSocket("ws://localhost:8080/ws");
+    ws = new WebSocket("ws://localhost:8080/frontend");
     ws.onmessage = function (e) {
         printMessage(e.data);
     }
@@ -12,9 +12,9 @@ function connect() {
 
 function printMessage(data) {
     let messages = document.getElementById("messages");
-    let messageData = JSON.parse(data);
+    // let messageData = JSON.parse(data);
     let newMessage = document.createElement("div");
-    newMessage.innerHTML = messageData.name + " : " + messageData.message;
+    newMessage.innerHTML = data;
     messages.appendChild(newMessage);
 }
 
@@ -23,8 +23,12 @@ function sendToGroupChat() {
     document.getElementById("message").value="";
     let name = document.getElementById("name").value;
     let messageObject = {
-        name: name,
-        message: messageText
+        "vessel":
+            {
+                name: name,
+                message: messageText
+            },
+        "streams": {}
     }
     ws.send(JSON.stringify(messageObject))
 }
