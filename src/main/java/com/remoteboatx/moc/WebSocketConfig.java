@@ -1,5 +1,6 @@
 package com.remoteboatx.moc;
 
+import com.remoteboatx.moc.websocket.WebSocketMessageHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketHandler;

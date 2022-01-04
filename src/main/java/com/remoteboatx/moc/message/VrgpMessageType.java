@@ -1,9 +1,6 @@
-package com.remoteboatx.moc;
+package com.remoteboatx.moc.message;
 
-import com.remoteboatx.moc.message.VesselInfoMessageHandler;
-import com.remoteboatx.moc.message.VrgpMessageHandler;
-
-enum VrgpMessageType {
+public enum VrgpMessageType {
 
     // TODO: Add message handlers for all message types.
 
@@ -13,7 +10,7 @@ enum VrgpMessageType {
 
     NMEA("nmea", null),
 
-    LATENCY("time", null),
+    LATENCY("time", new LatencyMessageHandler()),
 
     AUTHENTICATE("authenticate", null),
 
@@ -48,7 +45,7 @@ enum VrgpMessageType {
         return messageHandler;
     }
 
-    static VrgpMessageType getByMessageKey(String messageKey) {
+    public static VrgpMessageType getByMessageKey(String messageKey) {
         for (VrgpMessageType messageType: values()) {
             if (messageType.messageKey.equals(messageKey)) {
                 return messageType;

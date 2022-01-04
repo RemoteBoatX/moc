@@ -1,5 +1,6 @@
-package com.remoteboatx.moc;
+package com.remoteboatx.moc.websocket;
 
+import com.remoteboatx.moc.message.VrgpMessageType;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.springframework.web.socket.CloseStatus;
@@ -10,8 +11,8 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.io.IOException;
 import java.util.*;
 
-public class WebSocketMessageHandler extends TextWebSocketHandler implements VesselMessageHandler,
-        FrontendMessageHandler {
+public class WebSocketMessageHandler extends TextWebSocketHandler implements VesselWebSocketMessageHandler,
+        FrontendWebSocketMessageHandler {
 
     private final Map<ConnectionType, List<WebSocketSession>> connections = new HashMap<>();
 
@@ -42,7 +43,8 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Ves
         for (Iterator iterator = jsonMessage.keySet().iterator(); iterator.hasNext(); ) {
             String key = (String) iterator.next();
             Object value = jsonMessage.get(key);
-            VrgpMessageType.getByMessageKey(key).getMessageHandler().handleMessage(value, this);
+            VrgpMessageType.getByMessageKey(key).getMessageHandler().handleMessage(session,
+                    value, this);
         }
     }
 
