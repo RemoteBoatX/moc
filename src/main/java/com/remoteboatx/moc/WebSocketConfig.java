@@ -20,7 +20,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
         webSocketHandlerRegistry.addHandler(
                         new WebSocketHandler() {
                             @Override
-                            public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+                            public void afterConnectionEstablished(WebSocketSession session) {
                                 webSocketMessageHandler.afterConnectionEstablished(session, WebSocketMessageHandler.ConnectionType.VESSEL);
                             }
 
@@ -35,7 +35,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
                             }
 
                             @Override
-                            public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
+                            public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) {
                                 webSocketMessageHandler.afterConnectionClosed(session, closeStatus);
                             }
 
@@ -51,7 +51,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
         webSocketHandlerRegistry.addHandler(
                         new WebSocketHandler() {
                             @Override
-                            public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+                            public void afterConnectionEstablished(WebSocketSession session) {
                                 webSocketMessageHandler.afterConnectionEstablished(session, WebSocketMessageHandler.ConnectionType.FRONTEND);
                             }
 
@@ -66,7 +66,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
                             }
 
                             @Override
-                            public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
+                            public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) {
                                 webSocketMessageHandler.afterConnectionClosed(session, closeStatus);
                             }
 

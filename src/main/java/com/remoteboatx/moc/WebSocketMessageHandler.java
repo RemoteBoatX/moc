@@ -1,11 +1,9 @@
 package com.remoteboatx.moc;
 
-import com.remoteboatx.moc.message.VesselInfoMessageHandler;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
@@ -31,63 +29,28 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Ves
     }
 
     @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) {
         if (connectionTypes.get(session) == ConnectionType.VESSEL) {
             handleVesselMessage(session, message);
         }
+
+        // TODO: Handle frontend messages.
     }
 
-    protected void handleVesselMessage(WebSocketSession session, TextMessage message) throws Exception {
+    protected void handleVesselMessage(WebSocketSession session, TextMessage message) {
         JSONObject jsonMessage = (JSONObject) JSONValue.parse(message.getPayload());
         for (Iterator iterator = jsonMessage.keySet().iterator(); iterator.hasNext(); ) {
             String key = (String) iterator.next();
-            switch (key) {
-                // TODO: Enum.
-                case "streams":
-                    break;
-                case "vessel":
-                    VesselInfoMessageHandler.handleMessage(jsonMessage, this);
-                    break;
-                case "nmea":
-                    // TODO: Implement conning.
-                    break;
-                case "time":
-                    // TODO: Implement.
-                    break;
-                case "authenticate":
-                    break;
-                case "authentication":
-                    break;
-                case "guidance":
-                    break;
-                case "bye":
-                    // TODO: Implement.
-                    break;
-                case "warning":
-                    break;
-                case "alarm":
-                    break;
-                case "caution":
-                    break;
-                case "emergency":
-                    break;
-                case "info":
-                    break;
-                case "debug":
-                    break;
-                default:
-                    // TODO: Proper message and exception handling.
-                    throw new UnsupportedOperationException("This message is not supported by the MOC in VRGP");
-            }
-
+            Object value = jsonMessage.get(key);
+            VrgpMessageType.getByMessageKey(key).getMessageHandler().handleMessage(value, this);
         }
     }
 
     @Override
-    public void sendMessage(JSONObject json) {
+    public void sendMessage(String message) {
         for (WebSocketSession frontend : connections.getOrDefault(ConnectionType.FRONTEND, Collections.emptyList())) {
             try {
-                frontend.sendMessage(new TextMessage(json.toJSONString()));
+                frontend.sendMessage(new TextMessage(message));
             } catch (IOException e) {
                 // TODO: Error message and handling
                 System.err.println("Error sending a message.");

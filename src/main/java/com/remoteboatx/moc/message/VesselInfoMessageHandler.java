@@ -1,16 +1,11 @@
 package com.remoteboatx.moc.message;
 
 import com.remoteboatx.moc.FrontendMessageHandler;
-import org.json.simple.JSONObject;
 
-public class VesselInfoMessageHandler {
+public class VesselInfoMessageHandler implements VrgpMessageHandler {
 
-    private VesselInfoMessageHandler() {
-    }
-
-    public static void handleMessage(JSONObject json,
-                                     FrontendMessageHandler frontendMessageHandler) {
-
-        frontendMessageHandler.sendMessage(json);
+    @Override
+    public void handleMessage(Object message, FrontendMessageHandler frontendMessageHandler) {
+        frontendMessageHandler.sendMessage(message.toString());
     }
 }
