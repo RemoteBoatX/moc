@@ -1,6 +1,7 @@
 package com.remoteboatx.moc;
 
 import com.remoteboatx.moc.websocket.WebSocketMessageHandler;
+import com.remoteboatx.moc.websocket.WebSocketMessageHandlerWrapper;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketHandler;
@@ -16,66 +17,19 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {
-        final WebSocketMessageHandler webSocketMessageHandler = new WebSocketMessageHandler();
+
+        // Use the same message handler for both vessels and frontends.
+        final WebSocketMessageHandler messageHandler = new WebSocketMessageHandler();
 
         webSocketHandlerRegistry.addHandler(
-                        new WebSocketHandler() {
-                            @Override
-                            public void afterConnectionEstablished(WebSocketSession session) {
-                                webSocketMessageHandler.afterConnectionEstablished(session, WebSocketMessageHandler.ConnectionType.VESSEL);
-                            }
-
-                            @Override
-                            public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-                                webSocketMessageHandler.handleMessage(session, message);
-                            }
-
-                            @Override
-                            public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
-                                webSocketMessageHandler.handleTransportError(session, exception);
-                            }
-
-                            @Override
-                            public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) {
-                                webSocketMessageHandler.afterConnectionClosed(session, closeStatus);
-                            }
-
-                            @Override
-                            public boolean supportsPartialMessages() {
-                                return webSocketMessageHandler.supportsPartialMessages();
-                            }
-                        },
-                        "/vessel")
+                        new WebSocketMessageHandlerWrapper(messageHandler,
+                                WebSocketMessageHandler.ConnectionType.VESSEL), "/vessel")
                 // TODO: Set to actually allowed origins.
                 .setAllowedOriginPatterns("*");
 
         webSocketHandlerRegistry.addHandler(
-                        new WebSocketHandler() {
-                            @Override
-                            public void afterConnectionEstablished(WebSocketSession session) {
-                                webSocketMessageHandler.afterConnectionEstablished(session, WebSocketMessageHandler.ConnectionType.FRONTEND);
-                            }
-
-                            @Override
-                            public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-                                webSocketMessageHandler.handleMessage(session, message);
-                            }
-
-                            @Override
-                            public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
-                                webSocketMessageHandler.handleTransportError(session, exception);
-                            }
-
-                            @Override
-                            public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) {
-                                webSocketMessageHandler.afterConnectionClosed(session, closeStatus);
-                            }
-
-                            @Override
-                            public boolean supportsPartialMessages() {
-                                return webSocketMessageHandler.supportsPartialMessages();
-                            }
-                        }, "/frontend")
+                        new WebSocketMessageHandlerWrapper(messageHandler,
+                                WebSocketMessageHandler.ConnectionType.FRONTEND), "/frontend")
                 // TODO: Set to actually allowed origins.
                 .setAllowedOriginPatterns("*");
     }

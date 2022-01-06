@@ -3,6 +3,9 @@ package com.remoteboatx.moc.message;
 import com.remoteboatx.moc.websocket.FrontendWebSocketMessageHandler;
 import org.springframework.web.socket.WebSocketSession;
 
+/**
+ * Handler for VRGP vessel information messages.
+ */
 public class VesselInfoMessageHandler implements VrgpMessageHandler {
 
     @Override

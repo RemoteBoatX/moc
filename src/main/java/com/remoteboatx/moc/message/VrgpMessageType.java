@@ -1,5 +1,9 @@
 package com.remoteboatx.moc.message;
 
+/**
+ * VRGP message types that can be handled by the MOC, containing the message key and a handler
+ * for each message type.
+ */
 public enum VrgpMessageType {
 
     // TODO: Add message handlers for all message types.
@@ -41,18 +45,26 @@ public enum VrgpMessageType {
         this.messageHandler = messageHandler;
     }
 
-    public VrgpMessageHandler getMessageHandler() {
-        return messageHandler;
-    }
-
+    /**
+     * Finds the correct message type for a given message key.
+     *
+     * @param messageKey the message key from the JSON message.
+     */
     public static VrgpMessageType getByMessageKey(String messageKey) {
-        for (VrgpMessageType messageType: values()) {
+        for (VrgpMessageType messageType : values()) {
             if (messageType.messageKey.equals(messageKey)) {
                 return messageType;
             }
         }
 
-        // TODO: Proper message and exception handling.
-        throw new UnsupportedOperationException("This message is not supported by the MOC in VRGP");
+        throw new UnsupportedOperationException(String.format("The message \"%s\" is not " +
+                "supported by the MOC in VRGP", messageKey));
+    }
+
+    /**
+     * Returns the message handler for this message type.
+     */
+    public VrgpMessageHandler getMessageHandler() {
+        return messageHandler;
     }
 }

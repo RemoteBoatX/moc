@@ -8,6 +8,9 @@ import org.springframework.web.socket.WebSocketSession;
 import java.io.IOException;
 import java.util.Calendar;
 
+/**
+ * Message handler for VRGP latency messages.
+ */
 public class LatencyMessageHandler implements VrgpMessageHandler {
 
     @Override
@@ -20,33 +23,51 @@ public class LatencyMessageHandler implements VrgpMessageHandler {
         JSONObject json = (JSONObject) message;
 
         if (json.containsKey("received") && json.containsKey("sent")) {
-            // Calculate outgoing, incoming and round trip latency.
+            long sent, received;
+            try {
+                sent = (long) json.get("sent");
+                received = (long) json.get("received");
+            } catch (ClassCastException e) {
+                throw new IllegalArgumentException("\"sent\" and \"received\" have to be " +
+                        "numerical values in the \"time\" message.");
+            }
 
-            // TODO: Handle ClassCastException.
-            long sent = (long) json.get("sent");
-            long received = (long) json.get("received");
-
-            // TODO: Check plausibility. latencyOutgoing or latencyIncoming might be negative due
-            //  to lack of clock sync.
             long latencyOutgoing = received - sent;
             long latencyIncoming = now - received;
             long latencyRoundTrip = now - sent;
 
-            // TODO: Java object to JSON.
+            // TODO: This check does not guarantee clock synchronisation. This should be ensured
+            //  elsewhere.
+            if (latencyOutgoing < 0 || latencyIncoming < 0) {
+                throw new IllegalStateException("The clocks of the vessel and the MOC are not " +
+                        "synchronized.");
+            }
+
+            // TODO: Format messages to frontend properly.
             frontendMessageHandler.sendMessage(String.format("outgoing: %d, incoming: %d, round " +
                     "trip: %d", latencyOutgoing, latencyIncoming, latencyRoundTrip));
         } else if (json.containsKey("sent")) {
-            // Calculate incoming latency and send back time message.
-
-            // TODO: Handle ClassCastException.
-            long sent = (long) json.get("sent");
+            long sent;
+            try {
+                sent = (long) json.get("sent");
+            } catch (ClassCastException e) {
+                throw new IllegalArgumentException("\"sent\" has to be a numerical value in the " +
+                        "\"time\" message.");
+            }
 
             long latencyIncoming = now - sent;
 
-            // TODO: Java object to JSON.
+            // TODO: This check does not guarantee clock synchronisation. This should be ensured
+            //  elsewhere.
+            if (latencyIncoming < 0) {
+                throw new IllegalStateException("The clocks of the vessel and the MOC are not " +
+                        "synchronized.");
+            }
+
+            // TODO: Format messages to frontend properly.
             frontendMessageHandler.sendMessage(String.format("incoming: %d", latencyIncoming));
 
-            // TODO: Java object to JSON.
+            // TODO: Create Java class to model time message.
             try {
                 vesselSession.sendMessage(new TextMessage(
                         String.format("{\"time\": {\"sent\": %d, \"received\": %d}}", sent, now)
@@ -56,7 +77,7 @@ public class LatencyMessageHandler implements VrgpMessageHandler {
                 e.printStackTrace();
             }
         } else {
-            // TODO: Handle incorrect message format.
+            throw new IllegalArgumentException("\"time\" message was not formatted correctly.");
         }
     }
 }
