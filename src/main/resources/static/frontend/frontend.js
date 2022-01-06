@@ -12,7 +12,6 @@ function connect() {
 
 function printMessage(data) {
     let messages = document.getElementById("messages");
-    // let messageData = JSON.parse(data);
     let newMessage = document.createElement("div");
     newMessage.innerHTML = data;
     messages.appendChild(newMessage);

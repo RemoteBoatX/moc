@@ -11,36 +11,9 @@ function connect() {
 
 function handleMessage(data) {
     printMessage(data);
-
-    let messageData = JSON.parse(data);
-
-    // Handle latency message.
+    const messageData = JSON.parse(data);
     if (messageData.time) {
-        let now = Date.now();
-        let latencyMessage = messageData.time;
-        if (latencyMessage.sent && latencyMessage.received) {
-            let sent = latencyMessage.sent;
-            let received = latencyMessage.received;
-
-            let latencyOutgoing = received - sent;
-            let latencyIncoming = now - received;
-            let latencyRoundTrip = now - sent;
-
-            printMessage("outgoing: " + latencyOutgoing)
-            printMessage("incoming: " + latencyIncoming)
-            printMessage("round-trip: " + latencyRoundTrip)
-        } else if (latencyMessage.sent) {
-            let sent = latencyMessage.sent;
-            let latencyIncoming = now - sent;
-            printMessage("incoming: " + latencyIncoming)
-
-            let latencyMessageReply = {};
-            latencyMessage.received = now;
-            latencyMessageReply.time = latencyMessage;
-            ws.send(JSON.stringify(latencyMessageReply))
-        } else {
-            // TODO: Handle incorrect message format.
-        }
+        handleLatencyMessage(messageData.time);
     }
 }
 
@@ -49,4 +22,32 @@ function printMessage(message) {
     let newMessage = document.createElement("div");
     newMessage.innerHTML = message;
     messages.appendChild(newMessage);
+}
+
+function handleLatencyMessage(latencyMessage) {
+    const now = Date.now();
+
+    if (latencyMessage.sent && latencyMessage.received) {
+        const sent = latencyMessage.sent;
+        const received = latencyMessage.received;
+
+        const latencyOutgoing = received - sent;
+        const latencyIncoming = now - received;
+        const latencyRoundTrip = now - sent;
+
+        printMessage("outgoing: " + latencyOutgoing)
+        printMessage("incoming: " + latencyIncoming)
+        printMessage("round-trip: " + latencyRoundTrip)
+    } else if (latencyMessage.sent) {
+        const sent = latencyMessage.sent;
+        const latencyIncoming = now - sent;
+        printMessage("incoming: " + latencyIncoming)
+
+        let reply = {};
+        latencyMessage.received = now;
+        reply.time = latencyMessage;
+        ws.send(JSON.stringify(reply))
+    } else {
+        // TODO: Handle incorrect message format.
+    }
 }
