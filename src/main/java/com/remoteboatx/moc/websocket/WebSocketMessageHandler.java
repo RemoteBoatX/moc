@@ -10,6 +10,10 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public class WebSocketMessageHandler extends TextWebSocketHandler implements VesselWebSocketMessageHandler,
         FrontendWebSocketMessageHandler {
@@ -18,15 +22,35 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Ves
 
     private final Map<WebSocketSession, ConnectionType> connectionTypes = new HashMap<>();
 
+    private final Map<WebSocketSession, ScheduledFuture<?>> latencyTasks = new HashMap<>();
+
     public void afterConnectionEstablished(WebSocketSession session, ConnectionType type) {
         connections.computeIfAbsent(type, connectionType -> new ArrayList<>()).add(session);
         connectionTypes.put(session, type);
+
+        if (type == ConnectionType.VESSEL) {
+            ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+            ScheduledFuture<?> future = exec.scheduleWithFixedDelay(() -> {
+                try {
+                    session.sendMessage(new TextMessage(
+                            String.format("{\"time\": {\"sent\": %d}}",
+                                    Calendar.getInstance().getTimeInMillis())
+                    ));
+                } catch (IOException e) {
+                    // TODO: Handle IOException.
+                    e.printStackTrace();
+                }
+            }, 0, 5, TimeUnit.SECONDS);
+            latencyTasks.put(session, future);
+        }
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         connections.get(connectionTypes.get(session)).remove(session);
         connectionTypes.remove(session);
+        latencyTasks.get(session).cancel(false);
+        latencyTasks.remove(session);
     }
 
     @Override
@@ -50,7 +74,8 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Ves
 
     @Override
     public void sendMessage(String message) {
-        for (WebSocketSession frontend : connections.getOrDefault(ConnectionType.FRONTEND, Collections.emptyList())) {
+        for (WebSocketSession frontend : connections.getOrDefault(ConnectionType.FRONTEND,
+                Collections.emptyList())) {
             try {
                 frontend.sendMessage(new TextMessage(message));
             } catch (IOException e) {

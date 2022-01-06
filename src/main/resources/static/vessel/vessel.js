@@ -1,34 +1,52 @@
 let ws;
 
 function connect() {
-    ws = new WebSocket("ws://localhost:8080/frontend");
+    ws = new WebSocket("ws://localhost:8080/vessel");
     ws.onmessage = function (e) {
-        printMessage(e.data);
+        handleMessage(e.data);
     }
     document.getElementById("connectButton").disabled = true;
     document.getElementById("connectButton").value = "Connected";
-    document.getElementById("name").disabled = true;
 }
 
-function printMessage(data) {
-    let messages = document.getElementById("messages");
-    // let messageData = JSON.parse(data);
-    let newMessage = document.createElement("div");
-    newMessage.innerHTML = data;
-    messages.appendChild(newMessage);
-}
+function handleMessage(data) {
+    printMessage(data);
 
-function sendToGroupChat() {
-    let messageText = document.getElementById("message").value;
-    document.getElementById("message").value="";
-    let name = document.getElementById("name").value;
-    let messageObject = {
-        "vessel":
-            {
-                name: name,
-                message: messageText
-            },
-        "streams": {}
+    let messageData = JSON.parse(data);
+
+    // Handle latency message.
+    if (messageData.time) {
+        let now = Date.now();
+        let latencyMessage = messageData.time;
+        if (latencyMessage.sent && latencyMessage.received) {
+            let sent = latencyMessage.sent;
+            let received = latencyMessage.received;
+
+            let latencyOutgoing = received - sent;
+            let latencyIncoming = now - received;
+            let latencyRoundTrip = now - sent;
+
+            printMessage("outgoing: " + latencyOutgoing)
+            printMessage("incoming: " + latencyIncoming)
+            printMessage("round-trip: " + latencyRoundTrip)
+        } else if (latencyMessage.sent) {
+            let sent = latencyMessage.sent;
+            let latencyIncoming = now - sent;
+            printMessage("incoming: " + latencyIncoming)
+
+            let latencyMessageReply = {};
+            latencyMessage.received = now;
+            latencyMessageReply.time = latencyMessage;
+            ws.send(JSON.stringify(latencyMessageReply))
+        } else {
+            // TODO: Handle incorrect message format.
+        }
     }
-    ws.send(JSON.stringify(messageObject))
+}
+
+function printMessage(message) {
+    let messages = document.getElementById("messages");
+    let newMessage = document.createElement("div");
+    newMessage.innerHTML = message;
+    messages.appendChild(newMessage);
 }
