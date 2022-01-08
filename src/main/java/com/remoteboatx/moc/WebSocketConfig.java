@@ -3,10 +3,6 @@ package com.remoteboatx.moc;
 import com.remoteboatx.moc.websocket.WebSocketMessageHandler;
 import com.remoteboatx.moc.websocket.WebSocketMessageHandlerWrapper;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.WebSocketHandler;
-import org.springframework.web.socket.WebSocketMessage;
-import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
@@ -14,6 +10,8 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @Configuration
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
+
+    // TODO: Add MOC state holding static and dynamic vessel information.
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry webSocketHandlerRegistry) {

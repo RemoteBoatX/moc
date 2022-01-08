@@ -11,7 +11,6 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -34,41 +33,34 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Fro
      */
     private final Map<WebSocketSession, ConnectionType> connectionTypes = new HashMap<>();
 
-    /**
-     * Maps open connections to their respective latency message tasks.
-     */
-    private final Map<WebSocketSession, ScheduledFuture<?>> latencyTasks = new HashMap<>();
+    public WebSocketMessageHandler() {
+        // Periodically send latency message to all vessels.
+        Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(() -> {
+            for (WebSocketSession vesselSession : connections.getOrDefault(ConnectionType.VESSEL,
+                    Collections.emptyList())) {
+                try {
+                    vesselSession.sendMessage(new TextMessage(
+                            String.format("{\"time\": {\"sent\": %d}}",
+                                    Calendar.getInstance().getTimeInMillis())
+                    ));
+                } catch (IOException e) {
+                    // TODO: Handle IOException.
+                    e.printStackTrace();
+                }
+            }
+            // Send message immediately and then every five seconds.
+        }, 0, 5, TimeUnit.SECONDS);
+    }
 
     public void afterConnectionEstablished(WebSocketSession session, ConnectionType type) {
         connections.computeIfAbsent(type, connectionType -> new ArrayList<>()).add(session);
         connectionTypes.put(session, type);
-
-        // Periodically send latency message to vessels.
-        if (type == ConnectionType.VESSEL) {
-            ScheduledFuture<?> future =
-                    Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(() -> {
-                        try {
-                            session.sendMessage(new TextMessage(
-                                    String.format("{\"time\": {\"sent\": %d}}",
-                                            Calendar.getInstance().getTimeInMillis())
-                            ));
-                        } catch (IOException e) {
-                            // TODO: Handle IOException.
-                            e.printStackTrace();
-                        }
-                        // Send message immediately and then every five seconds.
-                    }, 0, 5, TimeUnit.SECONDS);
-            latencyTasks.put(session, future);
-        }
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        connections.get(connectionTypes.get(session)).remove(session);
+        connections.getOrDefault(connectionTypes.get(session), Collections.emptyList()).remove(session);
         connectionTypes.remove(session);
-
-        latencyTasks.get(session).cancel(false);
-        latencyTasks.remove(session);
     }
 
     @Override
@@ -83,6 +75,8 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Fro
     private void handleVesselMessage(WebSocketSession session, TextMessage message) {
         JSONObject jsonMessage = (JSONObject) JSONValue.parse(message.getPayload());
 
+        // TODO: Construct JSON reply with handleMessage returning smaller JSON objects and then
+        //  send one reply to the vessel after iterating over all messages.
         // Handle possibly multiple message by message key.
         for (Object jsonMessageKey : jsonMessage.keySet()) {
             String messageKey = (String) jsonMessageKey;
@@ -93,6 +87,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Fro
                         singleMessage, this);
             } catch (UnsupportedOperationException e) {
                 // TODO: How to respond to unsupported messages and where to throw the exception?
+                //  For testing only we could send error messages via the debug message.
             }
         }
     }

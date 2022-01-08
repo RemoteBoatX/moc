@@ -38,10 +38,10 @@ public class LatencyMessageHandler implements VrgpMessageHandler {
 
             // TODO: This check does not guarantee clock synchronisation. This should be ensured
             //  elsewhere.
-            if (latencyOutgoing < 0 || latencyIncoming < 0) {
-                throw new IllegalStateException("The clocks of the vessel and the MOC are not " +
-                        "synchronized.");
-            }
+            //  if (latencyOutgoing < 0 || latencyIncoming < 0) {
+            //      throw new IllegalStateException("The clocks of the vessel and the MOC are not " +
+            //              "synchronized.");
+            //  }
 
             // TODO: Format messages to frontend properly.
             frontendMessageHandler.sendMessage(String.format("outgoing: %d, incoming: %d, round " +
