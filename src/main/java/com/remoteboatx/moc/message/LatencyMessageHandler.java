@@ -2,7 +2,8 @@ package com.remoteboatx.moc.message;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.remoteboatx.moc.websocket.FrontendWebSocketMessageHandler;
+import com.remoteboatx.moc.state.Latency;
+import com.remoteboatx.moc.state.State;
 
 import java.util.Calendar;
 
@@ -12,21 +13,17 @@ import java.util.Calendar;
 public class LatencyMessageHandler implements VrgpMessageHandler {
 
     @Override
-    public JsonNode handleMessage(
-            JsonNode message, FrontendWebSocketMessageHandler frontendMessageHandler) {
-
+    public JsonNode handleMessage(String vesselId, JsonNode message) {
         if (message.has("received") && message.has("sent")) {
-            return handleMessageWithSentAndReceivedTimestamp(message, frontendMessageHandler);
+            return handleMessageWithSentAndReceivedTimestamp(vesselId, message);
         } else if (message.has("sent")) {
-            return handleMessageWithSentTimestamp(message, frontendMessageHandler);
+            return handleMessageWithSentTimestamp(vesselId, message);
         } else {
             throw new IllegalArgumentException("\"time\" message was not formatted correctly.");
         }
     }
 
-    private JsonNode handleMessageWithSentAndReceivedTimestamp(
-            JsonNode message, FrontendWebSocketMessageHandler frontendMessageHandler) {
-
+    private JsonNode handleMessageWithSentAndReceivedTimestamp(String vesselId, JsonNode message) {
         long now = Calendar.getInstance().getTimeInMillis();
 
         long sent = message.get("sent").asLong(-1);
@@ -36,9 +33,9 @@ public class LatencyMessageHandler implements VrgpMessageHandler {
                     "numerical values in the \"time\" message.");
         }
 
-        long latencyOutgoing = received - sent;
-        long latencyIncoming = now - received;
-        long latencyRoundTrip = now - sent;
+        Latency latency = new Latency();
+        latency.setOutgoing(received - sent);
+        latency.setIncoming(now - received);
 
         // TODO: This check does not guarantee clock synchronisation. This should be ensured
         //  elsewhere.
@@ -49,15 +46,12 @@ public class LatencyMessageHandler implements VrgpMessageHandler {
         //  }
 
         // TODO: Format messages to frontend properly.
-        frontendMessageHandler.sendMessage(String.format("outgoing: %d, incoming: %d, round " +
-                "trip: %d", latencyOutgoing, latencyIncoming, latencyRoundTrip));
+        State.getInstance().updateLatency(vesselId, latency);
 
         return null;
     }
 
-    private JsonNode handleMessageWithSentTimestamp(
-            JsonNode message, FrontendWebSocketMessageHandler frontendMessageHandler) {
-
+    private JsonNode handleMessageWithSentTimestamp(String vesselId, JsonNode message) {
         long now = Calendar.getInstance().getTimeInMillis();
 
         long sent = message.get("sent").asLong(-1);
@@ -66,7 +60,10 @@ public class LatencyMessageHandler implements VrgpMessageHandler {
                     "\"time\" message.");
         }
 
-        long latencyIncoming = now - sent;
+        // TODO: What to do if state currently holds incoming AND outgoing latency but with this
+        //  update only incoming latency is known? Either outgoing stays as is or is forgotten.
+        Latency latency = new Latency();
+        latency.setIncoming(now - sent);
 
         // TODO: This check does not guarantee clock synchronisation. This should be ensured
         //  elsewhere.
@@ -75,8 +72,7 @@ public class LatencyMessageHandler implements VrgpMessageHandler {
         //              "synchronized.");
         //  }
 
-        // TODO: Format messages to frontend properly.
-        frontendMessageHandler.sendMessage(String.format("incoming: %d", latencyIncoming));
+        State.getInstance().updateLatency(vesselId, latency);
 
         // TODO: Create Java class to model time message.
         final ObjectMapper objectMapper = new ObjectMapper();

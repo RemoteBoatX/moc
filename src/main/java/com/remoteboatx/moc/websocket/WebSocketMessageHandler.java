@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.remoteboatx.moc.message.VrgpMessageType;
+import com.remoteboatx.moc.state.State;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -23,12 +24,14 @@ import java.util.concurrent.TimeUnit;
  *
  * @see org.springframework.web.socket.WebSocketHandler
  */
-public class WebSocketMessageHandler extends TextWebSocketHandler implements FrontendWebSocketMessageHandler {
+public class WebSocketMessageHandler extends TextWebSocketHandler {
 
     /**
      * Lists of open connections by connection type.
      */
-    private final Map<ConnectionType, List<WebSocketSession>> connections = new HashMap<>();
+    private final List<WebSocketSession> vesselConnections = new ArrayList<>();
+
+    private final FrontendMessageHandler frontendMessageHandler = new FrontendMessageHandler();
 
     /**
      * Maps open connections to their connection type.
@@ -36,10 +39,12 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Fro
     private final Map<WebSocketSession, ConnectionType> connectionTypes = new HashMap<>();
 
     public WebSocketMessageHandler() {
+        // Pass FrontendMessageHandler to state, so updates can be displayed.
+        State.getInstance().setFrontendMessageHandler(frontendMessageHandler);
+
         // Periodically send latency message to all vessels.
         Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(() -> {
-            for (WebSocketSession vesselSession : connections.getOrDefault(ConnectionType.VESSEL,
-                    Collections.emptyList())) {
+            for (WebSocketSession vesselSession : vesselConnections) {
                 try {
                     vesselSession.sendMessage(new TextMessage(
                             String.format("{\"time\": {\"sent\": %d}}",
@@ -55,14 +60,32 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Fro
     }
 
     public void afterConnectionEstablished(WebSocketSession session, ConnectionType type) {
-        connections.computeIfAbsent(type, connectionType -> new ArrayList<>()).add(session);
         connectionTypes.put(session, type);
+
+        if (type == ConnectionType.FRONTEND) {
+            frontendMessageHandler.addFrontend(session);
+        } else {
+            vesselConnections.add(session);
+        }
+
+        if (type == ConnectionType.VESSEL) {
+            State.getInstance().addVessel(session.getId());
+        }
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        connections.getOrDefault(connectionTypes.get(session), Collections.emptyList()).remove(session);
-        connectionTypes.remove(session);
+        ConnectionType type = connectionTypes.remove(session);
+
+        if (type == ConnectionType.FRONTEND) {
+            frontendMessageHandler.removeFrontend(session);
+        } else {
+            vesselConnections.remove(session);
+        }
+
+        if (type == ConnectionType.VESSEL) {
+            State.getInstance().removeVessel(session.getId());
+        }
     }
 
     @Override
@@ -70,7 +93,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Fro
         if (connectionTypes.get(session) == ConnectionType.VESSEL) {
             handleVesselMessage(session, message);
         } else {
-            handleFrontendMessage(session, message);
+            frontendMessageHandler.handleMessage(session, message);
         }
     }
 
@@ -94,7 +117,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Fro
             try {
                 singleMessageReply =
                         VrgpMessageType.getByMessageKey(singleMessageKey).getMessageHandler()
-                                .handleMessage(singleMessage, this);
+                                .handleMessage(session.getId(), singleMessage);
             } catch (UnsupportedOperationException e) {
                 // TODO: How to respond to unsupported messages and where to throw the exception?
                 //  For testing only we could send error messages via the debug message.
@@ -113,22 +136,6 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Fro
         if (jsonReply.size() > 0) {
             try {
                 session.sendMessage(new TextMessage(jsonReply.asText()));
-            } catch (IOException e) {
-                // TODO: Handle IOException.
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void handleFrontendMessage(WebSocketSession session, TextMessage message) {
-    }
-
-    @Override
-    public void sendMessage(String message) {
-        for (WebSocketSession frontend : connections.getOrDefault(ConnectionType.FRONTEND,
-                Collections.emptyList())) {
-            try {
-                frontend.sendMessage(new TextMessage(message));
             } catch (IOException e) {
                 // TODO: Handle IOException.
                 e.printStackTrace();
