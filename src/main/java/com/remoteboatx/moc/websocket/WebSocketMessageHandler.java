@@ -1,8 +1,10 @@
 package com.remoteboatx.moc.websocket;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.remoteboatx.moc.message.VrgpMessageType;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -73,21 +75,47 @@ public class WebSocketMessageHandler extends TextWebSocketHandler implements Fro
     }
 
     private void handleVesselMessage(WebSocketSession session, TextMessage message) {
-        JSONObject jsonMessage = (JSONObject) JSONValue.parse(message.getPayload());
+        final JsonNode jsonMessage;
+        try {
+            jsonMessage = new ObjectMapper().readTree(message.getPayload());
+        } catch (JsonProcessingException e) {
+            // TODO: Handle invalid JSON.
+            e.printStackTrace();
+            return;
+        }
 
-        // TODO: Construct JSON reply with handleMessage returning smaller JSON objects and then
-        //  send one reply to the vessel after iterating over all messages.
-        // Handle possibly multiple message by message key.
-        for (Object jsonMessageKey : jsonMessage.keySet()) {
-            String messageKey = (String) jsonMessageKey;
-            Object singleMessage = jsonMessage.get(messageKey);
+        // Construct a single JSON reply message combining all replies to the received messages.
+        ObjectNode jsonReply = new ObjectMapper().createObjectNode();
 
+        jsonMessage.fieldNames().forEachRemaining(singleMessageKey -> {
+            JsonNode singleMessage = jsonMessage.get(singleMessageKey);
+
+            JsonNode singleMessageReply;
             try {
-                VrgpMessageType.getByMessageKey(messageKey).getMessageHandler().handleMessage(session,
-                        singleMessage, this);
+                singleMessageReply =
+                        VrgpMessageType.getByMessageKey(singleMessageKey).getMessageHandler()
+                                .handleMessage(singleMessage, this);
             } catch (UnsupportedOperationException e) {
                 // TODO: How to respond to unsupported messages and where to throw the exception?
                 //  For testing only we could send error messages via the debug message.
+                return;
+            }
+
+            if (singleMessageReply != null) {
+                // Add reply to single message to combined reply message.
+                singleMessageReply.fieldNames().forEachRemaining(replyMessageKey ->
+                        jsonReply.set(replyMessageKey,
+                                singleMessageReply.get(replyMessageKey)));
+            }
+        });
+
+        // Send reply only if there was any reply to the single messages.
+        if (jsonReply.size() > 0) {
+            try {
+                session.sendMessage(new TextMessage(jsonReply.asText()));
+            } catch (IOException e) {
+                // TODO: Handle IOException.
+                e.printStackTrace();
             }
         }
     }
