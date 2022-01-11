@@ -108,12 +108,12 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
         }
 
         // Construct a single JSON reply message combining all replies to the received messages.
-        ObjectNode jsonReply = new ObjectMapper().createObjectNode();
+        final ObjectNode jsonReply = new ObjectMapper().createObjectNode();
 
         jsonMessage.fieldNames().forEachRemaining(singleMessageKey -> {
-            JsonNode singleMessage = jsonMessage.get(singleMessageKey);
+            final JsonNode singleMessage = jsonMessage.get(singleMessageKey);
 
-            JsonNode singleMessageReply;
+            final JsonNode singleMessageReply;
             try {
                 singleMessageReply =
                         VrgpMessageType.getByMessageKey(singleMessageKey).getMessageHandler()

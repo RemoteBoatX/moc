@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class VesselInfoMessageHandler implements VrgpMessageHandler {
 
     @Override
-    public JsonNode handleMessage(String vesselId, JsonNode message) {
+    public JsonNode handleMessage(String vesselId, JsonNode jsonMessage) {
         return null;
     }
 }

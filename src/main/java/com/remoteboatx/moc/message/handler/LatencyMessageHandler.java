@@ -1,7 +1,7 @@
 package com.remoteboatx.moc.message.handler;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.remoteboatx.moc.message.LatencyMessage;
 import com.remoteboatx.moc.state.Latency;
 import com.remoteboatx.moc.state.State;
 
@@ -13,13 +13,13 @@ import java.util.Calendar;
 public class LatencyMessageHandler implements VrgpMessageHandler {
 
     @Override
-    public JsonNode handleMessage(String vesselId, JsonNode message) {
-        if (message.has("received") && message.has("sent")) {
-            return handleMessageWithSentAndReceivedTimestamp(vesselId, message);
-        } else if (message.has("sent")) {
-            return handleMessageWithSentTimestamp(vesselId, message);
+    public JsonNode handleMessage(String vesselId, JsonNode jsonMessage) {
+        // TODO: Handle IllegalArgumentExceptions from fromJson.
+        final LatencyMessage message = LatencyMessage.fromJson(jsonMessage);
+        if (message.hasReceived()) {
+            return handleMessageWithSentAndReceivedTimestamp(vesselId, jsonMessage);
         } else {
-            throw new IllegalArgumentException("\"time\" message was not formatted correctly.");
+            return handleMessageWithSentTimestamp(vesselId, jsonMessage);
         }
     }
 
@@ -74,12 +74,6 @@ public class LatencyMessageHandler implements VrgpMessageHandler {
 
         State.getInstance().updateLatency(vesselId, latency);
 
-        // TODO: Create Java class to model time message.
-        final ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper
-                .createObjectNode()
-                .set("time", objectMapper.createObjectNode()
-                        .put("sent", sent)
-                        .put("received", now));
+        return new LatencyMessage().withSent(sent).withReceived(now).toJson();
     }
 }
