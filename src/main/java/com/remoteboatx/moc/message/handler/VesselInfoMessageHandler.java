@@ -1,4 +1,4 @@
-package com.remoteboatx.moc.message;
+package com.remoteboatx.moc.message.handler;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
