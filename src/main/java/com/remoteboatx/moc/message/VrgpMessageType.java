@@ -1,5 +1,6 @@
 package com.remoteboatx.moc.message;
 
+import com.remoteboatx.moc.message.handler.ConnectionTerminationMessageHandler;
 import com.remoteboatx.moc.message.handler.LatencyMessageHandler;
 import com.remoteboatx.moc.message.handler.VesselInfoMessageHandler;
 import com.remoteboatx.moc.message.handler.VrgpMessageHandler;
@@ -26,7 +27,7 @@ public enum VrgpMessageType {
 
     GUIDANCE("guidance", null),
 
-    TERMINATE_CONNECTION("bye", null),
+    TERMINATE_CONNECTION("bye", new ConnectionTerminationMessageHandler()),
 
     NOTIFICATION_CAUTION("caution", null),
 

@@ -2,6 +2,7 @@ package com.remoteboatx.moc.message;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.lang.NonNull;
 
 /**
  * Abstract class for VRGP messages. Subclasses of this class model VRGP messages in order to
@@ -18,7 +19,8 @@ public abstract class AbstractVrgpMessage {
         return objectMapper;
     }
 
-    protected abstract VrgpMessageType getMessageType();
+    protected abstract @NonNull
+    VrgpMessageType getMessageType();
 
     /**
      * Serializes the message to JSON.
