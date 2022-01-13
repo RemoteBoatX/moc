@@ -6,6 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * Abstract class for VRGP messages. Subclasses of this class model VRGP messages in order to
  * serialize them to and deserialize them from JSON.
+ * <p>
+ * Implementation note: Abstract class was chosen over an interface in order to have a single
+ * {@link ObjectMapper} for all message classes.
  */
 public abstract class AbstractVrgpMessage {
 
@@ -15,10 +18,10 @@ public abstract class AbstractVrgpMessage {
         return objectMapper;
     }
 
+    protected abstract VrgpMessageType getMessageType();
+
     /**
      * Serializes the message to JSON.
      */
-    public JsonNode toJson() {
-        return new ObjectMapper().valueToTree(this);
-    }
+    public abstract JsonNode toJson();
 }

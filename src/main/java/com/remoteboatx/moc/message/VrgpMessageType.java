@@ -66,6 +66,13 @@ public enum VrgpMessageType {
     }
 
     /**
+     * Returns the message key as defined by the VRGP specification.
+     */
+    public String getMessageKey() {
+        return messageKey;
+    }
+
+    /**
      * Returns the message handler for this message type.
      */
     public VrgpMessageHandler getMessageHandler() {

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.remoteboatx.moc.message.LatencyMessage;
 import com.remoteboatx.moc.message.VrgpMessageType;
 import com.remoteboatx.moc.state.State;
 import org.springframework.web.socket.CloseStatus;
@@ -45,18 +46,20 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
         // Periodically send latency message to all vessels.
         Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(() -> {
             for (WebSocketSession vesselSession : vesselConnections) {
-                try {
-                    vesselSession.sendMessage(new TextMessage(
-                            String.format("{\"time\": {\"sent\": %d}}",
-                                    Calendar.getInstance().getTimeInMillis())
-                    ));
-                } catch (IOException e) {
-                    // TODO: Handle IOException.
-                    e.printStackTrace();
-                }
+                sendMessageToVessel(vesselSession, new LatencyMessage()
+                        .withSent(Calendar.getInstance().getTimeInMillis()).toJson());
             }
             // Send message immediately and then every five seconds.
         }, 0, 5, TimeUnit.SECONDS);
+    }
+
+    private static void sendMessageToVessel(WebSocketSession vesselSession, JsonNode message) {
+        try {
+            vesselSession.sendMessage(new TextMessage(message.toString()));
+        } catch (IOException e) {
+            // TODO: Handle IOException.
+            e.printStackTrace();
+        }
     }
 
     public void afterConnectionEstablished(WebSocketSession session, ConnectionType type) {
@@ -134,12 +137,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
 
         // Send reply only if there was any reply to the single messages.
         if (jsonReply.size() > 0) {
-            try {
-                session.sendMessage(new TextMessage(jsonReply.asText()));
-            } catch (IOException e) {
-                // TODO: Handle IOException.
-                e.printStackTrace();
-            }
+            sendMessageToVessel(session, jsonReply);
         }
     }
 

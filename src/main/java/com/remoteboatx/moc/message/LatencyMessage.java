@@ -1,7 +1,10 @@
 package com.remoteboatx.moc.message;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.lang.NonNull;
 
 /**
  * Models the VRGP latency message that includes a timestamp {@code sent} and optionally a second
@@ -11,6 +14,7 @@ public class LatencyMessage extends AbstractVrgpMessage {
 
     private Long sent;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long received;
 
     /**
@@ -34,6 +38,19 @@ public class LatencyMessage extends AbstractVrgpMessage {
         }
 
         return message;
+    }
+
+    @Override
+    public JsonNode toJson() {
+        final ObjectNode result = getObjectMapper().createObjectNode();
+        result.set(getMessageType().getMessageKey(), getObjectMapper().valueToTree(this));
+        return result;
+    }
+
+    @Override
+    protected @NonNull
+    VrgpMessageType getMessageType() {
+        return VrgpMessageType.LATENCY;
     }
 
     public Long getSent() {
