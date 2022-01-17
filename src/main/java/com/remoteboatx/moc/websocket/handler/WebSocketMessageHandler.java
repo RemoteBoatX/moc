@@ -14,7 +14,9 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -29,9 +31,9 @@ import java.util.concurrent.TimeUnit;
 public class WebSocketMessageHandler extends TextWebSocketHandler {
 
     /**
-     * Lists of open connections by connection type.
+     * Vessel connections by vessel ID.
      */
-    private final List<WebSocketSession> vesselConnections = new ArrayList<>();
+    private final Map<String, WebSocketSession> vesselConnections = new HashMap<>();
 
     private final FrontendMessageHandler frontendMessageHandler = new FrontendMessageHandler();
 
@@ -46,7 +48,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
 
         // Periodically send latency message to all vessels.
         Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(() -> {
-            for (WebSocketSession vesselSession : vesselConnections) {
+            for (WebSocketSession vesselSession : vesselConnections.values()) {
                 sendMessageToVessel(vesselSession, new LatencyMessage()
                         .withSent(Calendar.getInstance().getTimeInMillis()).toJson());
             }
@@ -69,7 +71,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
         if (type == ConnectionType.FRONTEND) {
             frontendMessageHandler.addFrontend(session);
         } else {
-            vesselConnections.add(session);
+            vesselConnections.put(session.getId(), session);
         }
 
         if (type == ConnectionType.VESSEL) {
@@ -84,7 +86,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
         if (type == ConnectionType.FRONTEND) {
             frontendMessageHandler.removeFrontend(session);
         } else {
-            vesselConnections.remove(session);
+            vesselConnections.remove(session.getId());
         }
 
         if (type == ConnectionType.VESSEL) {
@@ -94,14 +96,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
-        if (connectionTypes.get(session) == ConnectionType.VESSEL) {
-            handleVesselMessage(session, message);
-        } else {
-            frontendMessageHandler.handleMessage(session, message);
-        }
-    }
-
-    private void handleVesselMessage(WebSocketSession session, TextMessage message) {
+        // TODO: Parse in handleMessage.
         final JsonNode jsonMessage;
         try {
             jsonMessage = new ObjectMapper().readTree(message.getPayload());
@@ -111,6 +106,14 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
             return;
         }
 
+        if (connectionTypes.get(session) == ConnectionType.VESSEL) {
+            handleVesselMessage(session, jsonMessage);
+        } else {
+            handleFrontendMessage(jsonMessage);
+        }
+    }
+
+    private void handleVesselMessage(WebSocketSession session, JsonNode jsonMessage) {
         // Construct a single JSON reply message combining all replies to the received messages.
         final ObjectNode jsonReply = new ObjectMapper().createObjectNode();
 
@@ -131,6 +134,20 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
         if (jsonReply.size() > 0) {
             sendMessageToVessel(session, jsonReply);
         }
+    }
+
+    private void handleFrontendMessage(JsonNode jsonMessage) {
+        // Forward VRGP message from frontend to desired vessel.
+        jsonMessage.fieldNames().forEachRemaining(vesselId -> {
+            final JsonNode vesselMessage = jsonMessage.get(vesselId);
+            try {
+                // TODO: Handle NPE when vessel connection is not open anymore.
+                vesselConnections.get(vesselId).sendMessage(new TextMessage(vesselMessage.toString()));
+            } catch (IOException e) {
+                // TODO: Handle IOException.
+                e.printStackTrace();
+            }
+        });
     }
 
     /**

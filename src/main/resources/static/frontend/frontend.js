@@ -38,11 +38,25 @@ function addVessel(vesselId) {
     newVessel.id = vesselId;
     newVessel.innerHTML = vesselId;
     vessels.appendChild(newVessel);
+    let disconnectButton = document.createElement("button");
+    disconnectButton.id = vesselId + "-dc";
+    disconnectButton.innerHTML = "Disconnect";
+    disconnectButton.onclick = () => disconnectVessel(vesselId);
+    vessels.appendChild(disconnectButton);
+}
+
+function disconnectVessel(vesselId) {
+    let reply = {};
+    reply[vesselId] = {};
+    reply[vesselId].bye = true;
+    ws.send(JSON.stringify(reply))
 }
 
 function removeVessel(vesselId) {
     let vessel = document.getElementById(vesselId);
     vessel.parentNode.removeChild(vessel);
+    let disconnectButton = document.getElementById(vesselId + "-dc");
+    disconnectButton.parentNode.removeChild(disconnectButton);
 }
 
 // TODO: Use for disconnect.

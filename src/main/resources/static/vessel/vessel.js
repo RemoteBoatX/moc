@@ -10,7 +10,9 @@ function connect() {
 }
 
 function disconnect() {
-    ws.close();
+    let reply = {};
+    reply.bye = true;
+    ws.send(JSON.stringify(reply))
     document.getElementById("connectButton").disabled = false;
     document.getElementById("disconnectButton").disabled = true;
 }
@@ -20,6 +22,8 @@ function handleMessage(data) {
     const messageData = JSON.parse(data);
     if (messageData.time) {
         handleLatencyMessage(messageData.time);
+    } if (messageData.bye) {
+        handleByeMessage();
     }
 }
 
@@ -28,6 +32,12 @@ function printMessage(message) {
     let newMessage = document.createElement("div");
     newMessage.innerHTML = message;
     messages.appendChild(newMessage);
+}
+
+function handleByeMessage() {
+    ws.close();
+    document.getElementById("connectButton").disabled = false;
+    document.getElementById("disconnectButton").disabled = true;
 }
 
 function handleLatencyMessage(latencyMessage) {

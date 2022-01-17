@@ -25,9 +25,6 @@ public class FrontendMessageHandler {
         connections.remove(frontend);
     }
 
-    void handleMessage(WebSocketSession session, TextMessage message) {
-    }
-
     /**
      * Sends a message to all connected frontends.
      *
