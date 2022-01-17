@@ -1,4 +1,4 @@
-package com.remoteboatx.moc.websocket;
+package com.remoteboatx.moc.websocket.handler;
 
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketHandler;
@@ -8,7 +8,7 @@ import org.springframework.web.socket.WebSocketSession;
 /**
  * Wrapper for {@link WebSocketMessageHandler}s to forward method calls from a
  * {@link WebSocketHandler} and enrich them with information about the
- * {@link com.remoteboatx.moc.websocket.WebSocketMessageHandler.ConnectionType ConnectionType}.
+ * {@link WebSocketMessageHandler.ConnectionType ConnectionType}.
  */
 public class WebSocketMessageHandlerWrapper implements WebSocketHandler {
 
@@ -19,7 +19,7 @@ public class WebSocketMessageHandlerWrapper implements WebSocketHandler {
     /**
      * Constructs a {@link WebSocketHandler} that uses a {@link WebSocketMessageHandler} to
      * handle message by connections of a specific
-     * {@link com.remoteboatx.moc.websocket.WebSocketMessageHandler.ConnectionType ConnectionType}
+     * {@link WebSocketMessageHandler.ConnectionType ConnectionType}
      *
      * @param messageHandler the real message handler.
      * @param connectionType the connection type to be handled by this {@link WebSocketHandler}.

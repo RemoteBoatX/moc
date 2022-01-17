@@ -1,4 +1,4 @@
-package com.remoteboatx.moc.websocket;
+package com.remoteboatx.moc.websocket.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.remoteboatx.moc.message.LatencyMessage;
 import com.remoteboatx.moc.message.VrgpMessageType;
 import com.remoteboatx.moc.state.State;
+import com.remoteboatx.moc.websocket.WebSocketAction;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -116,22 +117,13 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
         jsonMessage.fieldNames().forEachRemaining(singleMessageKey -> {
             final JsonNode singleMessage = jsonMessage.get(singleMessageKey);
 
-            final JsonNode singleMessageReply;
             try {
-                singleMessageReply =
-                        VrgpMessageType.getByMessageKey(singleMessageKey).getMessageHandler()
-                                .handleMessage(session.getId(), singleMessage);
+                final WebSocketAction action = VrgpMessageType.getByMessageKey(singleMessageKey)
+                        .getMessageHandler().handleMessage(session.getId(), singleMessage);
+                action.execute(session, jsonReply);
             } catch (UnsupportedOperationException e) {
                 // TODO: How to respond to unsupported messages and where to throw the exception?
                 //  For testing only we could send error messages via the debug message.
-                return;
-            }
-
-            if (singleMessageReply != null) {
-                // Add reply to single message to combined reply message.
-                singleMessageReply.fieldNames().forEachRemaining(replyMessageKey ->
-                        jsonReply.set(replyMessageKey,
-                                singleMessageReply.get(replyMessageKey)));
             }
         });
 

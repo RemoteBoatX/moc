@@ -1,7 +1,7 @@
 package com.remoteboatx.moc;
 
-import com.remoteboatx.moc.websocket.WebSocketMessageHandler;
-import com.remoteboatx.moc.websocket.WebSocketMessageHandlerWrapper;
+import com.remoteboatx.moc.websocket.handler.WebSocketMessageHandler;
+import com.remoteboatx.moc.websocket.handler.WebSocketMessageHandlerWrapper;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;

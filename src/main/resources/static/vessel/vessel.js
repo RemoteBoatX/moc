@@ -6,7 +6,13 @@ function connect() {
         handleMessage(e.data);
     }
     document.getElementById("connectButton").disabled = true;
-    document.getElementById("connectButton").value = "Connected";
+    document.getElementById("disconnectButton").disabled = false;
+}
+
+function disconnect() {
+    ws.close();
+    document.getElementById("connectButton").disabled = false;
+    document.getElementById("disconnectButton").disabled = true;
 }
 
 function handleMessage(data) {

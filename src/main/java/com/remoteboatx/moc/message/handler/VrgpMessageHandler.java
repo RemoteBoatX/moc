@@ -1,6 +1,8 @@
 package com.remoteboatx.moc.message.handler;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.remoteboatx.moc.websocket.WebSocketAction;
+import org.springframework.lang.NonNull;
 
 /**
  * Interface for VRGP message handlers that handle messages of a specific type.
@@ -12,7 +14,8 @@ public interface VrgpMessageHandler {
      *
      * @param vesselId the internal ID of the vessel.
      * @param message  the message content.
-     * @return reply message in JSON format, or {@code null}.
+     * @return a WebSocketAction to be executed.
      */
-    JsonNode handleMessage(String vesselId, JsonNode message);
+    @NonNull
+    WebSocketAction handleMessage(String vesselId, JsonNode message);
 }

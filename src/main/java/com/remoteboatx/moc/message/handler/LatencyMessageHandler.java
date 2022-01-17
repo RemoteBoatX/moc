@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.remoteboatx.moc.message.LatencyMessage;
 import com.remoteboatx.moc.state.Latency;
 import com.remoteboatx.moc.state.State;
+import com.remoteboatx.moc.websocket.WebSocketAction;
+import com.remoteboatx.moc.websocket.WebSocketJsonReply;
 
 import java.util.Calendar;
 
@@ -13,7 +15,7 @@ import java.util.Calendar;
 public class LatencyMessageHandler implements VrgpMessageHandler {
 
     @Override
-    public JsonNode handleMessage(String vesselId, JsonNode jsonMessage) {
+    public WebSocketAction handleMessage(String vesselId, JsonNode jsonMessage) {
         // TODO: Handle IllegalArgumentExceptions from fromJson.
         final LatencyMessage message = LatencyMessage.fromJson(jsonMessage);
         if (message.hasReceived()) {
@@ -23,17 +25,19 @@ public class LatencyMessageHandler implements VrgpMessageHandler {
         }
     }
 
-    private JsonNode handleMessageWithSentAndReceivedTimestamp(String vesselId, JsonNode message) {
-        long now = Calendar.getInstance().getTimeInMillis();
+    private WebSocketAction handleMessageWithSentAndReceivedTimestamp(String vesselId,
+                                                                      JsonNode message) {
 
-        long sent = message.get("sent").asLong(-1);
-        long received = message.get("received").asLong(-1);
+        final long now = Calendar.getInstance().getTimeInMillis();
+
+        final long sent = message.get("sent").asLong(-1);
+        final long received = message.get("received").asLong(-1);
         if (sent < 0 || received < 0) {
             throw new IllegalArgumentException("\"sent\" and \"received\" have to be " +
                     "numerical values in the \"time\" message.");
         }
 
-        Latency latency = new Latency();
+        final Latency latency = new Latency();
         latency.setOutgoing(received - sent);
         latency.setIncoming(now - received);
 
@@ -48,13 +52,13 @@ public class LatencyMessageHandler implements VrgpMessageHandler {
         // TODO: Format messages to frontend properly.
         State.getInstance().updateLatency(vesselId, latency);
 
-        return null;
+        return WebSocketAction.NONE;
     }
 
-    private JsonNode handleMessageWithSentTimestamp(String vesselId, JsonNode message) {
-        long now = Calendar.getInstance().getTimeInMillis();
+    private WebSocketAction handleMessageWithSentTimestamp(String vesselId, JsonNode message) {
+        final long now = Calendar.getInstance().getTimeInMillis();
 
-        long sent = message.get("sent").asLong(-1);
+        final long sent = message.get("sent").asLong(-1);
         if (sent < 0) {
             throw new IllegalArgumentException("\"sent\" has to be a numerical value in the " +
                     "\"time\" message.");
@@ -62,7 +66,7 @@ public class LatencyMessageHandler implements VrgpMessageHandler {
 
         // TODO: What to do if state currently holds incoming AND outgoing latency but with this
         //  update only incoming latency is known? Either outgoing stays as is or is forgotten.
-        Latency latency = new Latency();
+        final Latency latency = new Latency();
         latency.setIncoming(now - sent);
 
         // TODO: This check does not guarantee clock synchronisation. This should be ensured
@@ -74,6 +78,7 @@ public class LatencyMessageHandler implements VrgpMessageHandler {
 
         State.getInstance().updateLatency(vesselId, latency);
 
-        return new LatencyMessage().withSent(sent).withReceived(now).toJson();
+        final LatencyMessage reply = new LatencyMessage().withSent(sent).withReceived(now);
+        return new WebSocketJsonReply(reply.toJson());
     }
 }

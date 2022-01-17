@@ -1,6 +1,6 @@
 package com.remoteboatx.moc.state;
 
-import com.remoteboatx.moc.websocket.FrontendMessageHandler;
+import com.remoteboatx.moc.websocket.handler.FrontendMessageHandler;
 
 import java.util.HashMap;
 import java.util.Map;

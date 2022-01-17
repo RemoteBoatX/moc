@@ -1,4 +1,4 @@
-package com.remoteboatx.moc.websocket;
+package com.remoteboatx.moc.websocket.handler;
 
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
