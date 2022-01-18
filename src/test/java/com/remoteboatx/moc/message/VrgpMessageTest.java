@@ -7,7 +7,7 @@ public class VrgpMessageTest {
 
     private static final String TIME_MESSAGE_TEMPLATE = "{\"time\":{\"sent\":%d,\"received\":%d}}";
 
-    private static final String BYE_MESSAGE = "{\"bye\":true}";
+    private static final String BYE_MESSAGE = "{\"bye\":{\"over\":true}}";
 
     @Test
     void testEmptyMessageToJson() {
@@ -16,7 +16,8 @@ public class VrgpMessageTest {
 
     @Test
     void testEmptyMessageFromJson() {
-        Assertions.assertFalse(VrgpMessage.fromJson("{}").hasTime());
+        Assertions.assertNull(VrgpMessage.fromJson("{}").getTime());
+        Assertions.assertNull(VrgpMessage.fromJson("{}").getBye());
     }
 
     @Test
@@ -56,6 +57,6 @@ public class VrgpMessageTest {
 
     @Test
     void testByeMessageFromJson() {
-        Assertions.assertTrue(VrgpMessage.fromJson(BYE_MESSAGE).hasBye());
+        Assertions.assertNotNull(VrgpMessage.fromJson(BYE_MESSAGE).getBye());
     }
 }

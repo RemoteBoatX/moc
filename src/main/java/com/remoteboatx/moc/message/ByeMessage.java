@@ -1,16 +1,12 @@
 package com.remoteboatx.moc.message;
 
-import com.fasterxml.jackson.databind.JsonNode;
+public class ByeMessage implements VrgpSingleMessage {
 
-public class ByeMessage extends AbstractVrgpSingleMessage {
+    // TODO: Ask Robert what the content of the bye message is.
 
-    @Override
-    protected VrgpMessageType getMessageType() {
-        return VrgpMessageType.TERMINATE_CONNECTION;
-    }
+    private boolean over = true;
 
-    @Override
-    public JsonNode toJson() {
-        return getObjectMapper().createObjectNode().set(getMessageType().getMessageKey(), null);
+    public boolean isOver() {
+        return over;
     }
 }

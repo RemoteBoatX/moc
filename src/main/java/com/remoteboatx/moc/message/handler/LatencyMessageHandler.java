@@ -4,19 +4,17 @@ import com.remoteboatx.moc.message.LatencyMessage;
 import com.remoteboatx.moc.state.Latency;
 import com.remoteboatx.moc.state.State;
 import com.remoteboatx.moc.websocket.WebSocketAction;
-import com.remoteboatx.moc.websocket.WebSocketJsonReply;
+import com.remoteboatx.moc.websocket.WebSocketReply;
 
 import java.util.Calendar;
 
 /**
  * Message handler for VRGP latency messages.
  */
-public class LatencyMessageHandler implements VrgpSingleMessageHandler {
+public class LatencyMessageHandler implements VrgpSingleMessageHandler<LatencyMessage> {
 
     @Override
-    public WebSocketAction handleMessage(String vesselId, String jsonMessage) {
-        // TODO: Handle IllegalArgumentExceptions from fromJson.
-        final LatencyMessage message = LatencyMessage.fromJson(jsonMessage);
+    public WebSocketAction handleMessage(String vesselId, LatencyMessage message) {
         if (message.hasReceived()) {
             return handleMessageWithSentAndReceivedTimestamp(vesselId, message);
         } else {
@@ -75,8 +73,7 @@ public class LatencyMessageHandler implements VrgpSingleMessageHandler {
 
         State.getInstance().updateLatency(vesselId, latency);
 
-        final LatencyMessage reply =
-                new LatencyMessage().withSent(sent).withReceived(now);
-        return new WebSocketJsonReply(reply.toJson());
+        final LatencyMessage reply = new LatencyMessage().withSent(sent).withReceived(now);
+        return new WebSocketReply(vrgpMessage -> vrgpMessage.withTime(reply));
     }
 }

@@ -1,6 +1,7 @@
 package com.remoteboatx.moc.websocket;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.remoteboatx.moc.message.VrgpMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 /**
@@ -19,7 +20,7 @@ public interface WebSocketAction {
      * JSON reply.
      *
      * @param session          the session to execute the WebSocketAction in.
-     * @param accumulatedReply the previously accumulated JSON reply to a WebSocket message.
+     * @param accumulatedReply the previously accumulated VRGP reply to a VRGP message.
      */
-    void execute(WebSocketSession session, ObjectNode accumulatedReply);
+    void execute(WebSocketSession session, VrgpMessage accumulatedReply);
 }

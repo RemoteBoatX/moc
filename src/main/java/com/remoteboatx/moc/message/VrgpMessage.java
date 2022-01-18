@@ -14,9 +14,8 @@ public class VrgpMessage {
     private LatencyMessage time;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    // TODO: Ask Robert what the bye message should include and then use and adjust ByeMessage
-    //  accordingly.
-    private Object bye;
+    // TODO: Ask Robert what the bye message should include and adjust ByeMessage accordingly.
+    private ByeMessage bye;
 
     @NonNull
     public static VrgpMessage fromJson(@NonNull String json) {
@@ -43,29 +42,21 @@ public class VrgpMessage {
         return time;
     }
 
-    public boolean hasTime() {
-        return getTime() != null;
-    }
-
     public VrgpMessage withTime(@NonNull LatencyMessage latencyMessage) {
         time = latencyMessage;
         return this;
     }
 
     @Nullable
-    public Object getBye() {
+    public ByeMessage getBye() {
         return bye;
     }
 
-    public boolean hasBye() {
-        return getBye() != null;
-    }
-
     public VrgpMessage withBye() {
-        return withBye(true);
+        return withBye(new ByeMessage());
     }
 
-    public VrgpMessage withBye(@NonNull Object byeMessage) {
+    public VrgpMessage withBye(@NonNull ByeMessage byeMessage) {
         bye = byeMessage;
         return this;
     }

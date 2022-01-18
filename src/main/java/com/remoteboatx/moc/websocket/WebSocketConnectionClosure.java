@@ -1,6 +1,6 @@
 package com.remoteboatx.moc.websocket;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.remoteboatx.moc.message.VrgpMessage;
 import org.springframework.lang.NonNull;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
@@ -31,7 +31,7 @@ public class WebSocketConnectionClosure implements WebSocketAction {
     }
 
     @Override
-    public void execute(WebSocketSession session, ObjectNode accumulatedReply) {
+    public void execute(WebSocketSession session, VrgpMessage accumulatedReply) {
         try {
             session.close(status);
         } catch (IOException e) {

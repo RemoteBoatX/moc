@@ -11,7 +11,8 @@ function connect() {
 
 function disconnect() {
     let reply = {};
-    reply.bye = true;
+    reply.bye = {};
+    reply.bye.over = true;
     ws.send(JSON.stringify(reply))
     document.getElementById("connectButton").disabled = false;
     document.getElementById("disconnectButton").disabled = true;

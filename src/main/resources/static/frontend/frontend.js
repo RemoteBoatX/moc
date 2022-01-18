@@ -7,7 +7,6 @@ function connect() {
     }
     document.getElementById("connectButton").disabled = true;
     document.getElementById("connectButton").value = "Connected";
-    document.getElementById("name").disabled = true;
 }
 
 function handleMessage(data) {
@@ -57,20 +56,4 @@ function removeVessel(vesselId) {
     vessel.parentNode.removeChild(vessel);
     let disconnectButton = document.getElementById(vesselId + "-dc");
     disconnectButton.parentNode.removeChild(disconnectButton);
-}
-
-// TODO: Use for disconnect.
-function sendToGroupChat() {
-    let messageText = document.getElementById("message").value;
-    document.getElementById("message").value="";
-    let name = document.getElementById("name").value;
-    let messageObject = {
-        "vessel":
-            {
-                name: name,
-                message: messageText
-            },
-        "streams": {}
-    }
-    ws.send(JSON.stringify(messageObject))
 }
