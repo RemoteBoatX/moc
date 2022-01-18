@@ -1,6 +1,5 @@
 package com.remoteboatx.moc.message.handler;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.remoteboatx.moc.websocket.WebSocketAction;
 import org.springframework.lang.NonNull;
 
@@ -17,5 +16,5 @@ public interface VrgpMessageHandler {
      * @return a WebSocketAction to be executed.
      */
     @NonNull
-    WebSocketAction handleMessage(String vesselId, JsonNode message);
+    WebSocketAction handleMessage(String vesselId, String message);
 }

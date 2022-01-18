@@ -10,7 +10,7 @@ import org.springframework.lang.NonNull;
  * Implementation note: Abstract class was introduced in order to have a single
  * {@link ObjectMapper} for all message classes.
  */
-public abstract class AbstractVrgpMessage implements VrgpMessage {
+public abstract class AbstractVrgpSingleMessage implements VrgpSingleMessage {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 

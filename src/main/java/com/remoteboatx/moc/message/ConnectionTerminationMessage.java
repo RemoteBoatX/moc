@@ -2,7 +2,7 @@ package com.remoteboatx.moc.message;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class ConnectionTerminationMessage extends AbstractVrgpMessage {
+public class ConnectionTerminationMessage extends AbstractVrgpSingleMessage {
 
     @Override
     protected VrgpMessageType getMessageType() {

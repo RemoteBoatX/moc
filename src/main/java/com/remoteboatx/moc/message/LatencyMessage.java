@@ -10,7 +10,7 @@ import org.springframework.lang.NonNull;
  * Models the VRGP latency message that includes a timestamp {@code sent} and optionally a second
  * timestamp {@code received}.
  */
-public class LatencyMessage extends AbstractVrgpMessage {
+public class LatencyMessage extends AbstractVrgpSingleMessage {
 
     private Long sent;
 
@@ -20,10 +20,10 @@ public class LatencyMessage extends AbstractVrgpMessage {
     /**
      * Deserializes a JSON message to a Java object of this class.
      */
-    public static LatencyMessage fromJson(JsonNode json) {
+    public static LatencyMessage fromJson(String json) {
         final LatencyMessage message;
         try {
-            message = getObjectMapper().treeToValue(json, LatencyMessage.class);
+            message = getObjectMapper().readValue(json, LatencyMessage.class);
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("\"time\" message was not formatted correctly.");
         }

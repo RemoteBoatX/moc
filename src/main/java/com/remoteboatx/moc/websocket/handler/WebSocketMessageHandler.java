@@ -122,7 +122,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
 
             try {
                 final WebSocketAction action = VrgpMessageType.getByMessageKey(singleMessageKey)
-                        .getMessageHandler().handleMessage(session.getId(), singleMessage);
+                        .getMessageHandler().handleMessage(session.getId(), singleMessage.toString());
                 action.execute(session, jsonReply);
             } catch (UnsupportedOperationException e) {
                 // TODO: How to respond to unsupported messages and where to throw the exception?

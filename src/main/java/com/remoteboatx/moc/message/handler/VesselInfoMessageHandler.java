@@ -1,6 +1,5 @@
 package com.remoteboatx.moc.message.handler;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.remoteboatx.moc.websocket.WebSocketAction;
 
 /**
@@ -9,7 +8,7 @@ import com.remoteboatx.moc.websocket.WebSocketAction;
 public class VesselInfoMessageHandler implements VrgpMessageHandler {
 
     @Override
-    public WebSocketAction handleMessage(String vesselId, JsonNode jsonMessage) {
+    public WebSocketAction handleMessage(String vesselId, String jsonMessage) {
         return WebSocketAction.NONE;
     }
 }
