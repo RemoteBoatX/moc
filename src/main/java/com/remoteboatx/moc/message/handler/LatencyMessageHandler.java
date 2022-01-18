@@ -11,7 +11,7 @@ import java.util.Calendar;
 /**
  * Message handler for VRGP latency messages.
  */
-public class LatencyMessageHandler implements VrgpMessageHandler {
+public class LatencyMessageHandler implements VrgpSingleMessageHandler {
 
     @Override
     public WebSocketAction handleMessage(String vesselId, String jsonMessage) {

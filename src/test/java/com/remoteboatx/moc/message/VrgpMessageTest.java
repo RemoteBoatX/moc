@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test;
 
 public class VrgpMessageTest {
 
-    private final static String TIME_MESSAGE_TEMPLATE = "{\"time\":{\"sent\":%d,\"received\":%d}}";
+    private static final String TIME_MESSAGE_TEMPLATE = "{\"time\":{\"sent\":%d,\"received\":%d}}";
+
+    private static final String BYE_MESSAGE = "{\"bye\":true}";
 
     @Test
     void testEmptyMessageToJson() {
@@ -33,6 +35,7 @@ public class VrgpMessageTest {
 
         final VrgpMessage message = VrgpMessage.fromJson(getJsonTimeMessage(sent, received));
 
+        Assertions.assertNotNull(message.getTime());
         Assertions.assertEquals(sent, message.getTime().getSent());
         Assertions.assertEquals(received, message.getTime().getReceived());
     }
@@ -44,5 +47,15 @@ public class VrgpMessageTest {
 
     private String getJsonTimeMessage(long sent, long received) {
         return String.format(TIME_MESSAGE_TEMPLATE, sent, received);
+    }
+
+    @Test
+    void testByeMessageToJson() {
+        Assertions.assertEquals(BYE_MESSAGE, new VrgpMessage().withBye().toJson());
+    }
+
+    @Test
+    void testByeMessageFromJson() {
+        Assertions.assertTrue(VrgpMessage.fromJson(BYE_MESSAGE).hasBye());
     }
 }

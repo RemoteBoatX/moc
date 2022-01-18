@@ -6,7 +6,7 @@ import org.springframework.lang.NonNull;
 /**
  * Interface for VRGP message handlers that handle messages of a specific type.
  */
-public interface VrgpMessageHandler {
+public interface VrgpSingleMessageHandler {
 
     /**
      * Handles a VRGP message of a specific type.

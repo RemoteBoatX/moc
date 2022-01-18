@@ -1,9 +1,9 @@
 package com.remoteboatx.moc.message;
 
-import com.remoteboatx.moc.message.handler.ConnectionTerminationMessageHandler;
+import com.remoteboatx.moc.message.handler.ByeMessageHandler;
 import com.remoteboatx.moc.message.handler.LatencyMessageHandler;
 import com.remoteboatx.moc.message.handler.VesselInfoMessageHandler;
-import com.remoteboatx.moc.message.handler.VrgpMessageHandler;
+import com.remoteboatx.moc.message.handler.VrgpSingleMessageHandler;
 
 /**
  * VRGP message types that can be handled by the MOC, containing the message key and a handler
@@ -27,7 +27,7 @@ public enum VrgpMessageType {
 
     GUIDANCE("guidance", null),
 
-    TERMINATE_CONNECTION("bye", new ConnectionTerminationMessageHandler()),
+    TERMINATE_CONNECTION("bye", new ByeMessageHandler()),
 
     NOTIFICATION_CAUTION("caution", null),
 
@@ -43,9 +43,9 @@ public enum VrgpMessageType {
 
     private final String messageKey;
 
-    private final VrgpMessageHandler messageHandler;
+    private final VrgpSingleMessageHandler messageHandler;
 
-    VrgpMessageType(String messageKey, VrgpMessageHandler messageHandler) {
+    VrgpMessageType(String messageKey, VrgpSingleMessageHandler messageHandler) {
         this.messageKey = messageKey;
         this.messageHandler = messageHandler;
     }
@@ -76,7 +76,7 @@ public enum VrgpMessageType {
     /**
      * Returns the message handler for this message type.
      */
-    public VrgpMessageHandler getMessageHandler() {
+    public VrgpSingleMessageHandler getMessageHandler() {
         return messageHandler;
     }
 }

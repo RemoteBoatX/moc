@@ -3,6 +3,8 @@ package com.remoteboatx.moc.message;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 public class VrgpMessage {
 
@@ -11,7 +13,13 @@ public class VrgpMessage {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private LatencyMessage time;
 
-    public static VrgpMessage fromJson(String json) {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    // TODO: Ask Robert what the bye message should include and then use and adjust ByeMessage
+    //  accordingly.
+    private Object bye;
+
+    @NonNull
+    public static VrgpMessage fromJson(@NonNull String json) {
         try {
             return objectMapper.readValue(json, VrgpMessage.class);
         } catch (JsonProcessingException e) {
@@ -19,6 +27,7 @@ public class VrgpMessage {
         }
     }
 
+    @NonNull
     public String toJson() {
         try {
             return objectMapper.writeValueAsString(this);
@@ -29,6 +38,7 @@ public class VrgpMessage {
         }
     }
 
+    @Nullable
     public LatencyMessage getTime() {
         return time;
     }
@@ -37,8 +47,26 @@ public class VrgpMessage {
         return getTime() != null;
     }
 
-    public VrgpMessage withTime(LatencyMessage latencyMessage) {
+    public VrgpMessage withTime(@NonNull LatencyMessage latencyMessage) {
         time = latencyMessage;
+        return this;
+    }
+
+    @Nullable
+    public Object getBye() {
+        return bye;
+    }
+
+    public boolean hasBye() {
+        return getBye() != null;
+    }
+
+    public VrgpMessage withBye() {
+        return withBye(true);
+    }
+
+    public VrgpMessage withBye(@NonNull Object byeMessage) {
+        bye = byeMessage;
         return this;
     }
 }
