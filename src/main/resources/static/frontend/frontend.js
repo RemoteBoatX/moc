@@ -1,4 +1,5 @@
 let ws;
+let requestedStreams = {};
 
 function connect() {
     ws = new WebSocket("ws://localhost:8080/frontend");
@@ -21,6 +22,9 @@ function handleMessage(data) {
         if (message.latency) {
             printMessage(vesselId + ": " + message.latency);
         }
+        if (message.streams) {
+            handleStreamsMessage(vesselId, message.streams);
+        }
     }
 }
 
@@ -37,11 +41,14 @@ function addVessel(vesselId) {
     newVessel.id = vesselId;
     newVessel.innerHTML = vesselId;
     vessels.appendChild(newVessel);
+    let buttons = document.createElement("div");
+    buttons.id = vesselId + "-buttons";
     let disconnectButton = document.createElement("button");
-    disconnectButton.id = vesselId + "-dc";
     disconnectButton.innerHTML = "Disconnect";
     disconnectButton.onclick = () => disconnectVessel(vesselId);
-    vessels.appendChild(disconnectButton);
+    buttons.appendChild(disconnectButton);
+    vessels.appendChild(buttons);
+    requestedStreams[vesselId] = [];
 }
 
 function disconnectVessel(vesselId) {
@@ -54,6 +61,59 @@ function disconnectVessel(vesselId) {
 function removeVessel(vesselId) {
     let vessel = document.getElementById(vesselId);
     vessel.parentNode.removeChild(vessel);
-    let disconnectButton = document.getElementById(vesselId + "-dc");
-    disconnectButton.parentNode.removeChild(disconnectButton);
+    let buttons = document.getElementById(vesselId + "-buttons");
+    buttons.parentNode.removeChild(buttons);
+}
+
+function handleStreamsMessage(vesselId, streams) {
+    if (!streams.length) {
+        return;
+    }
+
+    let buttons = document.getElementById(vesselId + "-buttons");
+    for (stream of streams) {
+        createCheckbox(vesselId, stream, buttons);
+    }
+    let requestButton = document.createElement("button");
+    requestButton.innerHTML = "Request";
+    requestButton.onclick = () => requestStreams(vesselId);
+    buttons.appendChild(requestButton);
+}
+
+function requestStreams(vesselId) {
+    let requestMessage = {request: {}};
+    for (stream of requestedStreams[vesselId]) {
+        requestMessage.request[stream] = true;
+    }
+    let message = {};
+    message[vesselId] = requestMessage;
+    ws.send(JSON.stringify(message))
+}
+
+function createCheckbox(vesselId, stream, container) {
+    const checkbox = document.createElement('input');
+    checkbox.type = "checkbox";
+    checkbox.name = "name";
+    checkbox.value = "value";
+    checkbox.id = vesselId + stream;
+    checkbox.onclick = e => {
+        requestStream(vesselId, stream, checkbox.checked);
+    }
+
+    const label = document.createElement('label')
+    label.htmlFor = checkbox.id;
+    label.appendChild(document.createTextNode(stream));
+
+    container.appendChild(checkbox);
+    container.appendChild(label);
+}
+
+function requestStream(vesselId, stream, requested) {
+    let requestedStreamsForVessel = requestedStreams[vesselId];
+    if (requested) {
+        requestedStreamsForVessel.push(stream);
+    } else {
+        requestedStreamsForVessel.pop(stream);
+    }
+    requestedStreams[vesselId] = requestedStreamsForVessel;
 }
