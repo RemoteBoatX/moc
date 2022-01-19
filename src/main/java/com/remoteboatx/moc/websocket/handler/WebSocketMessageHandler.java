@@ -1,13 +1,11 @@
 package com.remoteboatx.moc.websocket.handler;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.remoteboatx.moc.message.LatencyMessage;
-import com.remoteboatx.moc.message.VrgpMessage;
-import com.remoteboatx.moc.message.handler.VrgpMessageHandler;
-import com.remoteboatx.moc.message.util.VrgpMessageUtil;
+import com.remoteboatx.moc.frontend.message.FrontendMessage;
 import com.remoteboatx.moc.state.State;
+import com.remoteboatx.moc.vrgp.message.LatencyMessage;
+import com.remoteboatx.moc.vrgp.message.VrgpMessage;
+import com.remoteboatx.moc.vrgp.message.handler.VrgpMessageHandler;
+import com.remoteboatx.moc.vrgp.message.util.VrgpMessageUtil;
 import com.remoteboatx.moc.websocket.WebSocketAction;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -85,7 +83,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        ConnectionType type = connectionTypes.remove(session);
+        final ConnectionType type = connectionTypes.remove(session);
 
         if (type == ConnectionType.FRONTEND) {
             frontendMessageHandler.removeFrontend(session);
@@ -114,7 +112,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
         // Construct a single JSON reply message combining all replies to the received messages.
         final VrgpMessage reply = new VrgpMessage();
 
-        List<WebSocketAction> actions = vesselMessageHandler.handleMessage(session.getId(),
+        final List<WebSocketAction> actions = vesselMessageHandler.handleMessage(session.getId(),
                 VrgpMessage.fromJson(message));
         for (WebSocketAction action : actions) {
             action.execute(session, reply);
@@ -127,26 +125,20 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
     }
 
     private void handleFrontendMessage(String message) {
-        // TODO: Create FrontendMessage class that handles JSON.
-        final JsonNode jsonMessage;
-        try {
-            jsonMessage = new ObjectMapper().readTree(message);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return;
-        }
+        final FrontendMessage frontendMessage = FrontendMessage.fromJson(message);
 
-        // Forward VRGP message from frontend to desired vessel.
-        jsonMessage.fieldNames().forEachRemaining(vesselId -> {
-            final JsonNode vesselMessage = jsonMessage.get(vesselId);
+        // Forward VRGP messages from frontend to desired vessels.
+        for (FrontendMessage.VesselMessagePair vesselMessagePair : frontendMessage) {
+            final String vesselId = vesselMessagePair.getVesselId();
+            final String vesselMessage = vesselMessagePair.getMessage();
             try {
                 // TODO: Handle NPE when vessel connection is not open anymore.
-                vesselConnections.get(vesselId).sendMessage(new TextMessage(vesselMessage.toString()));
+                vesselConnections.get(vesselId).sendMessage(new TextMessage(vesselMessage));
             } catch (IOException e) {
                 // TODO: Handle IOException.
                 e.printStackTrace();
             }
-        });
+        }
     }
 
     /**
