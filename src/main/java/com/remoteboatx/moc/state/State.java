@@ -1,5 +1,7 @@
 package com.remoteboatx.moc.state;
 
+import com.remoteboatx.moc.vrgp.message.stream.Conning;
+import com.remoteboatx.moc.vrgp.message.util.JsonUtil;
 import com.remoteboatx.moc.websocket.handler.FrontendMessageHandler;
 
 import java.util.HashMap;
@@ -52,6 +54,7 @@ public class State {
     }
 
     public void updateLatency(String vesselId, Latency latency) {
+        // TODO: What to do when only incoming latency is updated?
         vessels.get(vesselId).setLatency(latency);
 
         // TODO: Format messages to frontend properly using latency class.
@@ -76,6 +79,14 @@ public class State {
         availableStreamsMessage.append("]");
         sendMessageToFrontends(vesselId, String.format("{\"streams\": %s}",
                 availableStreamsMessage));
+    }
+
+    public void updateConning(String vesselId, Conning conning) {
+        vessels.get(vesselId).setConning(conning);
+
+        // TODO: Format message to frontend properly.
+        sendMessageToFrontends(vesselId, String.format("{\"conning\": %s}",
+                JsonUtil.toJson(conning)));
     }
 
     private void sendMessageToFrontends(String vesselId, String message) {

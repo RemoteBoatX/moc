@@ -1,5 +1,7 @@
 package com.remoteboatx.moc.state;
 
+import com.remoteboatx.moc.vrgp.message.stream.Conning;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +13,8 @@ class Vessel {
     private Latency latency;
 
     private List<String> availableStreams = new ArrayList<>();
+
+    private Conning conning;
 
     Latency getLatency() {
         return latency;
@@ -26,5 +30,13 @@ class Vessel {
 
     public void setAvailableStreams(List<String> availableStreams) {
         this.availableStreams = availableStreams;
+    }
+
+    public Conning getConning() {
+        return conning;
+    }
+
+    public void setConning(Conning conning) {
+        this.conning = conning;
     }
 }

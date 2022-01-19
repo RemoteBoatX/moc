@@ -25,6 +25,10 @@ function handleMessage(data) {
         if (message.streams) {
             handleStreamsMessage(vesselId, message.streams);
         }
+        if (message.conning) {
+            console.log("Vessel " + vesselId);
+            console.log(message.conning);
+        }
     }
 }
 

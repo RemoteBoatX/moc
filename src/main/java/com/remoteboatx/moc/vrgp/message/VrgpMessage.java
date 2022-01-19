@@ -3,6 +3,7 @@ package com.remoteboatx.moc.vrgp.message;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.remoteboatx.moc.vrgp.message.stream.Conning;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
@@ -12,6 +13,9 @@ public class VrgpMessage {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private VesselInformationMessage vessel;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Conning conning;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private LatencyMessage time;
@@ -43,6 +47,11 @@ public class VrgpMessage {
     @Nullable
     public VesselInformationMessage getVessel() {
         return vessel;
+    }
+
+    @Nullable
+    public Conning getConning() {
+        return conning;
     }
 
     @Nullable

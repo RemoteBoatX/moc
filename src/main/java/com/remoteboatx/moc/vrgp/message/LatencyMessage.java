@@ -1,6 +1,7 @@
 package com.remoteboatx.moc.vrgp.message;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Models the VRGP latency message that includes a timestamp {@code sent} and optionally a second
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 public class LatencyMessage implements VrgpSingleMessage {
 
+    @JsonProperty(required = true)
     private Long sent;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

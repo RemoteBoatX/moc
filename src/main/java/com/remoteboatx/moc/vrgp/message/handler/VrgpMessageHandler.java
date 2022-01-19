@@ -8,7 +8,10 @@ import java.util.List;
 
 public class VrgpMessageHandler {
 
-    private final VesselInformationMessageHandler vesselMessageHandler = new VesselInformationMessageHandler();
+    private final VesselInformationMessageHandler vesselMessageHandler =
+            new VesselInformationMessageHandler();
+
+    private final ConningMessageHandler conningMessageHandler = new ConningMessageHandler();
 
     private final LatencyMessageHandler latencyMessageHandler = new LatencyMessageHandler();
 
@@ -25,6 +28,9 @@ public class VrgpMessageHandler {
         }
         if (message.getBye() != null) {
             result.add(byeMessageHandler.handleMessage(vesselId, message.getBye()));
+        }
+        if (message.getConning() != null) {
+            result.add(conningMessageHandler.handleMessage(vesselId, message.getConning()));
         }
 
         return result;
