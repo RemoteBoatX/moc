@@ -1,4 +1,4 @@
-package com.remoteboatx.moc.message;
+package com.remoteboatx.moc.vrgp.message;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

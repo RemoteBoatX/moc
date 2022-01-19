@@ -1,6 +1,6 @@
 package com.remoteboatx.moc.websocket;
 
-import com.remoteboatx.moc.message.VrgpMessage;
+import com.remoteboatx.moc.vrgp.message.VrgpMessage;
 import org.springframework.lang.NonNull;
 import org.springframework.web.socket.WebSocketSession;
 

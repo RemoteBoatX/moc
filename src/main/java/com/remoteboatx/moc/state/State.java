@@ -3,6 +3,7 @@ package com.remoteboatx.moc.state;
 import com.remoteboatx.moc.websocket.handler.FrontendMessageHandler;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,9 +55,30 @@ public class State {
         vessels.get(vesselId).setLatency(latency);
 
         // TODO: Format messages to frontend properly using latency class.
-        String latencyMessage = String.format("outgoing: %d, incoming: %d, round trip: %d",
+        final String latencyMessage = String.format("outgoing: %d, incoming: %d, round trip: %d",
                 latency.getOutgoing(), latency.getIncoming(), latency.getRoundTrip());
-        frontendMessageHandler.sendMessage(String.format("{\"%s\": {\"latency\": \"%s\"}}",
-                vesselId, latencyMessage));
+        sendMessageToFrontends(vesselId, String.format("{\"latency\": \"%s\"}", latencyMessage));
+    }
+
+    public void updateAvailableStreams(String vesselId, List<String> availableStreams) {
+        vessels.get(vesselId).setAvailableStreams(availableStreams);
+
+        // TODO: Format messages to frontend properly using latency class.
+        final StringBuilder availableStreamsMessage = new StringBuilder("[");
+        for (String stream : availableStreams) {
+            availableStreamsMessage.append("\"");
+            availableStreamsMessage.append(stream);
+            availableStreamsMessage.append("\",");
+        }
+        if (!availableStreams.isEmpty()) {
+            availableStreamsMessage.deleteCharAt(availableStreamsMessage.length() - 1);
+        }
+        availableStreamsMessage.append("]");
+        sendMessageToFrontends(vesselId, String.format("{\"streams\": %s}",
+                availableStreamsMessage));
+    }
+
+    private void sendMessageToFrontends(String vesselId, String message) {
+        frontendMessageHandler.sendMessage(String.format("{\"%s\": %s}", vesselId, message));
     }
 }

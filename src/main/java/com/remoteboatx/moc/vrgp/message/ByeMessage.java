@@ -1,4 +1,4 @@
-package com.remoteboatx.moc.message;
+package com.remoteboatx.moc.vrgp.message;
 
 public class ByeMessage implements VrgpSingleMessage {
 

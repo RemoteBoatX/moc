@@ -2,9 +2,20 @@ let ws;
 
 function connect() {
     ws = new WebSocket("ws://localhost:8080/vessel");
-    ws.onmessage = function (e) {
+    ws.onopen = e => {
+        let vesselMessage = {
+            vessel: {
+                streams: {
+                    conning: true,
+                    camera: true
+                }
+            }
+        };
+        ws.send(JSON.stringify(vesselMessage));
+    };
+    ws.onmessage = e => {
         handleMessage(e.data);
-    }
+    };
     document.getElementById("connectButton").disabled = true;
     document.getElementById("disconnectButton").disabled = false;
 }

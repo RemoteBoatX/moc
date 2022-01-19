@@ -1,6 +1,6 @@
-package com.remoteboatx.moc.message.util;
+package com.remoteboatx.moc.vrgp.message.util;
 
-import com.remoteboatx.moc.message.VrgpMessage;
+import com.remoteboatx.moc.vrgp.message.VrgpMessage;
 
 public class VrgpMessageUtil {
 

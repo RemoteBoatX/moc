@@ -1,12 +1,14 @@
-package com.remoteboatx.moc.message.handler;
+package com.remoteboatx.moc.vrgp.message.handler;
 
-import com.remoteboatx.moc.message.VrgpMessage;
+import com.remoteboatx.moc.vrgp.message.VrgpMessage;
 import com.remoteboatx.moc.websocket.WebSocketAction;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class VrgpMessageHandler {
+
+    private final VesselInformationMessageHandler vesselMessageHandler = new VesselInformationMessageHandler();
 
     private final LatencyMessageHandler latencyMessageHandler = new LatencyMessageHandler();
 
@@ -15,6 +17,9 @@ public class VrgpMessageHandler {
     public List<WebSocketAction> handleMessage(String vesselId, VrgpMessage message) {
         final List<WebSocketAction> result = new ArrayList<>();
 
+        if (message.getVessel() != null) {
+            result.add(vesselMessageHandler.handleMessage(vesselId, message.getVessel()));
+        }
         if (message.getTime() != null) {
             result.add(latencyMessageHandler.handleMessage(vesselId, message.getTime()));
         }

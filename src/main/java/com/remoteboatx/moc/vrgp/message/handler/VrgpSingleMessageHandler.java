@@ -1,6 +1,6 @@
-package com.remoteboatx.moc.message.handler;
+package com.remoteboatx.moc.vrgp.message.handler;
 
-import com.remoteboatx.moc.message.VrgpSingleMessage;
+import com.remoteboatx.moc.vrgp.message.VrgpSingleMessage;
 import com.remoteboatx.moc.websocket.WebSocketAction;
 import org.springframework.lang.NonNull;
 

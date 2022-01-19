@@ -1,7 +1,6 @@
 package com.remoteboatx.moc.websocket;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.remoteboatx.moc.message.VrgpMessage;
+import com.remoteboatx.moc.vrgp.message.VrgpMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 /**

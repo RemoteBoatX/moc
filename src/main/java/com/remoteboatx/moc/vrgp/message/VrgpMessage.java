@@ -1,4 +1,4 @@
-package com.remoteboatx.moc.message;
+package com.remoteboatx.moc.vrgp.message;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -9,6 +9,9 @@ import org.springframework.lang.Nullable;
 public class VrgpMessage {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private VesselInformationMessage vessel;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private LatencyMessage time;
@@ -35,6 +38,11 @@ public class VrgpMessage {
             e.printStackTrace();
             return "";
         }
+    }
+
+    @Nullable
+    public VesselInformationMessage getVessel() {
+        return vessel;
     }
 
     @Nullable
