@@ -1,8 +1,8 @@
 package com.remoteboatx.moc.state;
 
 /**
- * Models the latency between the MOC and a vessel including the latency of incoming and outgoing
- * messages as well as a round trip latency for messages.
+ * Model of the latency between the MOC and a vessel including the latency of incoming and outgoing messages as well as
+ * a round trip latency for messages.
  */
 public class Latency {
 

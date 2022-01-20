@@ -7,17 +7,16 @@ import org.springframework.web.socket.WebSocketSession;
 import java.util.function.Consumer;
 
 /**
- * WebSocketAction that appends a JSON reply to an accumulated WebSocket message reply.
+ * WebSocketAction that manipulates a previously accumulated reply message.
  */
 public class WebSocketReply implements WebSocketAction {
 
     private final Consumer<VrgpMessage> reply;
 
     /**
-     * Creates a WebSocketAction that appends the given JSON reply to an accumulated WebSocket
-     * message reply.
+     * Creates a WebSocketAction that manipulates a previously accumulated reply message.
      *
-     * @param reply the JSON reply.
+     * @param reply a VrgpMessage consumer to manipulate the reply message.
      */
     public WebSocketReply(@NonNull Consumer<VrgpMessage> reply) {
         this.reply = reply;
@@ -25,7 +24,7 @@ public class WebSocketReply implements WebSocketAction {
 
     @Override
     public void execute(WebSocketSession session, VrgpMessage accumulatedReply) {
-        // Add reply to single message to accumulated reply message.
+        // Manipulate previously accumulated reply.
         reply.accept(accumulatedReply);
     }
 }

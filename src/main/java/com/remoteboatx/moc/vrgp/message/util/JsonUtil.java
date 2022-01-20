@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.lang.NonNull;
 
+/**
+ * Utility class for JSON (de-)serializing.
+ */
 public class JsonUtil {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -11,19 +14,41 @@ public class JsonUtil {
     private JsonUtil() {
     }
 
+    /**
+     * Returns a global singleton default {@link ObjectMapper} that should be used whenever the default {@link
+     * ObjectMapper} is needed.
+     *
+     * <b>Please note:</b> Do not configure this {@link ObjectMapper}.
+     */
+    public static ObjectMapper getObjectMapper() {
+        return OBJECT_MAPPER;
+    }
+
+    /**
+     * Deserializes JSON content from given string to an object of the target class.
+     *
+     * @throws IllegalArgumentException if the JSON does not comply with the target class.
+     * @see ObjectMapper#readValue(String, Class)
+     */
     @NonNull
-    public static <T> T fromJson(@NonNull String json, Class<T> targetType) {
+    public static <T> T fromJson(@NonNull String json, Class<T> targetClass) {
         try {
-            return OBJECT_MAPPER.readValue(json, targetType);
+            return getObjectMapper().readValue(json, targetClass);
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Message does not comply with VRGP message format.");
         }
     }
 
+    /**
+     * Serializes an object to JSON.
+     *
+     * @return the JSON string or the empty string if the object can not be serialized.
+     * @see ObjectMapper#writeValueAsString(Object)
+     */
     @NonNull
     public static String toJson(@NonNull Object object) {
         try {
-            return OBJECT_MAPPER.writeValueAsString(object);
+            return getObjectMapper().writeValueAsString(object);
         } catch (JsonProcessingException e) {
             // TODO: Handle JsonProcessingException.
             e.printStackTrace();

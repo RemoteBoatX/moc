@@ -10,10 +10,10 @@ import java.util.List;
 /**
  * Message handler for connected frontends.
  */
-public class FrontendMessageHandler {
+public class FrontendWebSocketMessageHandler {
 
     /**
-     * Lists of open connections by connection type.
+     * List of open frontend connections.
      */
     private final List<WebSocketSession> connections = new ArrayList<>();
 

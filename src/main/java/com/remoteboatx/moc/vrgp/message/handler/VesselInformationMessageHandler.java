@@ -5,6 +5,9 @@ import com.remoteboatx.moc.vrgp.message.util.StreamsUtil;
 import com.remoteboatx.moc.state.State;
 import com.remoteboatx.moc.websocket.WebSocketAction;
 
+/**
+ * Message handler for VRGP {@link VesselInformationMessage}s.
+ */
 public class VesselInformationMessageHandler implements VrgpSingleMessageHandler<VesselInformationMessage> {
 
     @Override

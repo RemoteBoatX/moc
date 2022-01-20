@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Models the static and dynamic information the MOC holds about a vessel.
+ * Model of the static and dynamic information the MOC holds about a vessel.
  */
 class Vessel {
 

@@ -6,6 +6,8 @@ import org.springframework.lang.NonNull;
 
 /**
  * Interface for VRGP message handlers that handle messages of a specific type.
+ *
+ * @param <T> the specific VRGP message type this handler handles.
  */
 public interface VrgpSingleMessageHandler<T extends VrgpSingleMessage> {
 

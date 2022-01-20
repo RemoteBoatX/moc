@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Handler for all incoming and outgoing WebSocket messages from both vessels and MOC frontends.
  * It replicates the {@link org.springframework.web.socket.WebSocketHandler WebSocketHandler}
- * distinguishing connections and message by {@link ConnectionType ConnectionType}, whether they
+ * distinguishing connections and messages by {@link ConnectionType ConnectionType}, whether they
  * are from a vessel or a frontend.
  *
  * @see org.springframework.web.socket.WebSocketHandler
@@ -37,7 +37,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
 
     private final VrgpMessageHandler vesselMessageHandler = new VrgpMessageHandler();
 
-    private final FrontendMessageHandler frontendMessageHandler = new FrontendMessageHandler();
+    private final FrontendWebSocketMessageHandler frontendMessageHandler = new FrontendWebSocketMessageHandler();
 
     /**
      * Maps open connections to their connection type.
@@ -67,6 +67,9 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
         }
     }
 
+    /**
+     * @see org.springframework.web.socket.WebSocketHandler#afterConnectionEstablished(WebSocketSession)
+     */
     public void afterConnectionEstablished(WebSocketSession session, ConnectionType type) {
         connectionTypes.put(session, type);
 

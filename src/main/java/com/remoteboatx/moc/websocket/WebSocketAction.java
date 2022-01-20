@@ -16,10 +16,10 @@ public interface WebSocketAction {
 
     /**
      * Executes the WebSocketAction in the given session and using the previously accumulated
-     * JSON reply.
+     * reply message.
      *
      * @param session          the session to execute the WebSocketAction in.
-     * @param accumulatedReply the previously accumulated VRGP reply to a VRGP message.
+     * @param accumulatedReply the previously accumulated VRGP reply message.
      */
     void execute(WebSocketSession session, VrgpMessage accumulatedReply);
 }

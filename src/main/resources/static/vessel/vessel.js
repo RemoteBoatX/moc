@@ -2,7 +2,7 @@ let ws;
 
 function connect() {
     ws = new WebSocket("ws://localhost:8080/vessel");
-    ws.onopen = e => {
+    ws.onopen = () => {
         let vesselMessage = {
             vessel: {
                 streams: {
@@ -38,7 +38,8 @@ function handleMessage(data) {
     const messageData = JSON.parse(data);
     if (messageData.time) {
         handleLatencyMessage(messageData.time);
-    } if (messageData.bye) {
+    }
+    if (messageData.bye) {
         handleByeMessage();
     }
 }

@@ -2,15 +2,17 @@ package com.remoteboatx.moc.frontend.message;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.remoteboatx.moc.vrgp.message.util.JsonUtil;
 import org.springframework.lang.NonNull;
 
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * JSON model of messages sent by a frontend which contains pairs of vessel IDs and the messages that should be sent to
+ * the vessel represented by the vessel ID.
+ */
 public class FrontendMessage implements Iterable<FrontendMessage.VesselMessagePair> {
-
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private final JsonNode jsonMessage;
 
@@ -18,13 +20,15 @@ public class FrontendMessage implements Iterable<FrontendMessage.VesselMessagePa
         this.jsonMessage = jsonMessage;
     }
 
+    /**
+     * Deserializes a JSON string to a FrontendMessage object.
+     */
     @NonNull
     public static FrontendMessage fromJson(@NonNull String json) {
         try {
-            return new FrontendMessage(objectMapper.readTree(json));
+            return new FrontendMessage(JsonUtil.getObjectMapper().readTree(json));
         } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("Message does not comply with frontend message " +
-                    "format.");
+            throw new IllegalArgumentException("Message does not comply with frontend message format.");
         }
     }
 
@@ -45,6 +49,9 @@ public class FrontendMessage implements Iterable<FrontendMessage.VesselMessagePa
         };
     }
 
+    /**
+     * A pair of a vessel ID and a message which is intended to be sent to the vessel represented by the ID.
+     */
     public static final class VesselMessagePair {
 
         final String vesselId;

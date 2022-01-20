@@ -9,7 +9,7 @@ import com.remoteboatx.moc.websocket.WebSocketReply;
 import java.util.Calendar;
 
 /**
- * Message handler for VRGP latency messages.
+ * Message handler for VRGP {@link LatencyMessage}s.
  */
 public class LatencyMessageHandler implements VrgpSingleMessageHandler<LatencyMessage> {
 

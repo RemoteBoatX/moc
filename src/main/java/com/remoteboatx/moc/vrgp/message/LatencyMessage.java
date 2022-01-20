@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Models the VRGP latency message that includes a timestamp {@code sent} and optionally a second
+ * JSON model of the VRGP latency message that includes a timestamp {@code sent} and optionally a second
  * timestamp {@code received}.
  */
 public class LatencyMessage implements VrgpSingleMessage {
