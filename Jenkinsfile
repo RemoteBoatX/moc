@@ -29,10 +29,8 @@ pipeline {
         stage('Deploy'){
             steps{
                 script{
-                    if(env.BRANCH_NAME == 'main'){
-                        sh 'docker build -t moc-server .'
-                        sh 'docker run --rm -p 8080:8080 moc-server'
-                    }
+                    sh 'docker build -t moc-server .'
+                    sh 'docker run --rm -p 8080:8080 moc-server'
                 }
             }
         }
