@@ -15,20 +15,23 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-               // Commands for build
+               sh 'make'
+               archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
             }
         }
       
         stage('Test') {
             steps {
-                // Commands for testing
+                sh 'make check || true'
+                junit '**/target/*.xml'
             }
         }
         stage('Deploy'){
             steps{
                 script{
                     if(env.BRANCH_NAME == 'main'){
-                        //Commands for deployment (only in main)
+                        sh 'docker build -t moc-server .'
+                        sh 'docker run --rm -p 8080:8080 moc-server'
                     }
                 }
             }
