@@ -8,9 +8,4 @@ public class LatencyMessageTest {
     @Test
     void testSuccess() {
     }
-
-    @Test
-    void testFail() {
-        Assertions.fail("test failed");
-    }
 }
