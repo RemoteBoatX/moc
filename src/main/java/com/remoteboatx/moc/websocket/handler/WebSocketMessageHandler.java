@@ -1,6 +1,6 @@
 package com.remoteboatx.moc.websocket.handler;
 
-import com.remoteboatx.moc.frontend.message.FrontendMessage;
+import com.remoteboatx.moc.frontend.message.IncomingFrontendMessage;
 import com.remoteboatx.moc.state.State;
 import com.remoteboatx.moc.vrgp.message.LatencyMessage;
 import com.remoteboatx.moc.vrgp.message.VrgpMessage;
@@ -128,10 +128,10 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
     }
 
     private void handleFrontendMessage(String message) {
-        final FrontendMessage frontendMessage = FrontendMessage.fromJson(message);
+        final IncomingFrontendMessage frontendMessage = IncomingFrontendMessage.fromJson(message);
 
         // Forward VRGP messages from frontend to desired vessels.
-        for (FrontendMessage.VesselMessagePair vesselMessagePair : frontendMessage) {
+        for (IncomingFrontendMessage.VesselMessagePair vesselMessagePair : frontendMessage) {
             final String vesselId = vesselMessagePair.getVesselId();
             final String vesselMessage = vesselMessagePair.getMessage();
             try {

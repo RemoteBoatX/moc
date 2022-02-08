@@ -12,11 +12,11 @@ import java.util.Map;
  * JSON model of messages sent by a frontend which contains pairs of vessel IDs and the messages that should be sent to
  * the vessel represented by the vessel ID.
  */
-public class FrontendMessage implements Iterable<FrontendMessage.VesselMessagePair> {
+public class IncomingFrontendMessage implements Iterable<IncomingFrontendMessage.VesselMessagePair> {
 
     private final JsonNode jsonMessage;
 
-    private FrontendMessage(JsonNode jsonMessage) {
+    private IncomingFrontendMessage(JsonNode jsonMessage) {
         this.jsonMessage = jsonMessage;
     }
 
@@ -24,9 +24,9 @@ public class FrontendMessage implements Iterable<FrontendMessage.VesselMessagePa
      * Deserializes a JSON string to a FrontendMessage object.
      */
     @NonNull
-    public static FrontendMessage fromJson(@NonNull String json) {
+    public static IncomingFrontendMessage fromJson(@NonNull String json) {
         try {
-            return new FrontendMessage(JsonUtil.getObjectMapper().readTree(json));
+            return new IncomingFrontendMessage(JsonUtil.getObjectMapper().readTree(json));
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Message does not comply with frontend message format.");
         }
