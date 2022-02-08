@@ -20,10 +20,10 @@ function handleMessage(data) {
             removeVessel(vesselId);
         }
         if (message.latency) {
-            printMessage(vesselId + ": " + message.latency);
+            printMessage(vesselId + ": " + JSON.stringify(message.latency));
         }
-        if (message.streams) {
-            handleStreamsMessage(vesselId, message.streams);
+        if (message.vessel) {
+            handleVesselMessage(vesselId, message.vessel);
         }
         if (message.conning) {
             console.log("Vessel " + vesselId);
@@ -69,13 +69,14 @@ function removeVessel(vesselId) {
     buttons.parentNode.removeChild(buttons);
 }
 
-function handleStreamsMessage(vesselId, streams) {
-    if (!streams.length) {
+function handleVesselMessage(vesselId, vessel) {
+    const streams = vessel.streams;
+    if (!streams || !Object.keys(streams).length) {
         return;
     }
 
     let buttons = document.getElementById(vesselId + "-buttons");
-    for (stream of streams) {
+    for (const stream in streams) {
         createCheckbox(vesselId, stream, buttons);
     }
     let requestButton = document.createElement("button");
@@ -86,7 +87,7 @@ function handleStreamsMessage(vesselId, streams) {
 
 function requestStreams(vesselId) {
     let requestMessage = {request: {}};
-    for (stream of requestedStreams[vesselId]) {
+    for (const stream of requestedStreams[vesselId]) {
         requestMessage.request[stream] = true;
     }
     let message = {};
@@ -100,7 +101,7 @@ function createCheckbox(vesselId, stream, container) {
     checkbox.name = "name";
     checkbox.value = "value";
     checkbox.id = vesselId + stream;
-    checkbox.onclick = e => {
+    checkbox.onclick = () => {
         requestStream(vesselId, stream, checkbox.checked);
     }
 
@@ -117,7 +118,7 @@ function requestStream(vesselId, stream, requested) {
     if (requested) {
         requestedStreamsForVessel.push(stream);
     } else {
-        requestedStreamsForVessel.pop(stream);
+        requestedStreamsForVessel = requestedStreamsForVessel.filter(requestedStream => stream !== requestedStream);
     }
     requestedStreams[vesselId] = requestedStreamsForVessel;
 }

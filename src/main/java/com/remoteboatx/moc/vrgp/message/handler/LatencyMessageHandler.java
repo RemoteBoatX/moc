@@ -39,7 +39,6 @@ public class LatencyMessageHandler implements VrgpSingleMessageHandler<LatencyMe
         //              "synchronized.");
         //  }
 
-        // TODO: Format messages to frontend properly.
         State.getInstance().updateLatency(vesselId, latency);
 
         return WebSocketAction.NONE;
