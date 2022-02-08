@@ -16,8 +16,14 @@ pipeline {
         stage('Build') {
             steps {
                 script{
-                    sh 'make'
-                    archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
+                    sh 'mvn clean package -Dmaven.test.skip=true'
+                }
+            }
+
+            post {
+                success {
+                    junit '**/target/surefire-reports/TEST-*.xml'
+                    archiveArtifacts 'target/*.jar'
                 }
             }
         }
@@ -25,11 +31,11 @@ pipeline {
         stage('Test') {
             steps {
                 script{
-                    sh 'make check || true'
-                    junit '**/target/*.xml'
+                    echo 'Test phase...'
                 }
             }
         }
+
         stage('Deploy'){
             steps{
                 script{
