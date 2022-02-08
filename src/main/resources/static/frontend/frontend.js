@@ -6,13 +6,23 @@ function connect() {
     ws.onmessage = function (e) {
         handleMessage(e.data);
     }
-    document.getElementById("connectButton").disabled = true;
-    document.getElementById("connectButton").value = "Connected";
+    const connectButton = document.getElementById("connectButton");
+    connectButton.parentNode.removeChild(connectButton);
 }
 
 function handleMessage(data) {
     const messageData = JSON.parse(data);
-    for (vesselId in messageData) {
+
+
+    const update = messageData.update;
+    delete messageData.update;
+    if (update === false) {
+        for (let vesselId in messageData) {
+            addVessel(vesselId);
+        }
+    }
+
+    for (let vesselId in messageData) {
         const message = messageData[vesselId];
         if (message.connected === true) {
             addVessel(vesselId);
@@ -76,7 +86,7 @@ function handleVesselMessage(vesselId, vessel) {
     }
 
     let buttons = document.getElementById(vesselId + "-buttons");
-    for (const stream in streams) {
+    for (let stream in streams) {
         createCheckbox(vesselId, stream, buttons);
     }
     let requestButton = document.createElement("button");
@@ -87,7 +97,7 @@ function handleVesselMessage(vesselId, vessel) {
 
 function requestStreams(vesselId) {
     let requestMessage = {request: {}};
-    for (const stream of requestedStreams[vesselId]) {
+    for (let stream of requestedStreams[vesselId]) {
         requestMessage.request[stream] = true;
     }
     let message = {};

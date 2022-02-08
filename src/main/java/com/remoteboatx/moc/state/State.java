@@ -4,7 +4,6 @@ import com.remoteboatx.moc.frontend.message.OutgoingFrontendMessage;
 import com.remoteboatx.moc.frontend.message.VesselUpdate;
 import com.remoteboatx.moc.vrgp.message.VesselInformation;
 import com.remoteboatx.moc.vrgp.message.stream.Conning;
-import com.remoteboatx.moc.vrgp.message.util.StreamsUtil;
 import com.remoteboatx.moc.websocket.handler.FrontendWebSocketMessageHandler;
 
 import java.util.HashMap;
@@ -36,6 +35,15 @@ public class State {
      */
     public void setFrontendMessageHandler(FrontendWebSocketMessageHandler frontendMessageHandler) {
         this.frontendMessageHandler = frontendMessageHandler;
+    }
+
+    public OutgoingFrontendMessage getAsFrontendMessage() {
+        final OutgoingFrontendMessage message = new OutgoingFrontendMessage();
+        for (String vesselId : vessels.keySet()) {
+            message.withVesselUpdate(vesselId, vessels.get(vesselId).getAsVesselUpdate());
+        }
+        message.asUpdate(false);
+        return message;
     }
 
     /**
@@ -76,7 +84,7 @@ public class State {
      * Updates the currently available information streams of a vessel.
      */
     public void updateVesselInformation(String vesselId, VesselInformation vesselInformation) {
-        vessels.get(vesselId).setAvailableStreams(StreamsUtil.getAvailableStreams(vesselInformation.getStreams()));
+        vessels.get(vesselId).setVesselInformation(vesselInformation);
 
         frontendMessageHandler.sendMessage(new OutgoingFrontendMessage().withVesselUpdate(vesselId,
                 new VesselUpdate().withVesselInformation(vesselInformation)).toJson());

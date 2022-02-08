@@ -1,5 +1,6 @@
 package com.remoteboatx.moc.websocket.handler;
 
+import com.remoteboatx.moc.state.State;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -19,7 +20,7 @@ public class FrontendWebSocketMessageHandler {
 
     void addFrontend(WebSocketSession frontend) {
         connections.add(frontend);
-        // TODO: Send current state.
+        sendMessage(frontend, State.getInstance().getAsFrontendMessage().toJson());
     }
 
     void removeFrontend(WebSocketSession frontend) {
@@ -33,12 +34,16 @@ public class FrontendWebSocketMessageHandler {
      */
     public void sendMessage(String message) {
         for (WebSocketSession frontend : connections) {
-            try {
-                frontend.sendMessage(new TextMessage(message));
-            } catch (IOException e) {
-                // TODO: Handle IOException.
-                e.printStackTrace();
-            }
+            sendMessage(frontend, message);
+        }
+    }
+
+    private void sendMessage(WebSocketSession frontend, String message) {
+        try {
+            frontend.sendMessage(new TextMessage(message));
+        } catch (IOException e) {
+            // TODO: Handle IOException.
+            e.printStackTrace();
         }
     }
 }
