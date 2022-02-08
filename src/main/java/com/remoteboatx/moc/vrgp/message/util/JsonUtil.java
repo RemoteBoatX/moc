@@ -1,6 +1,7 @@
 package com.remoteboatx.moc.vrgp.message.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.lang.NonNull;
 
@@ -42,11 +43,21 @@ public class JsonUtil {
     /**
      * Serializes an object to JSON.
      *
+     * @see ObjectMapper#valueToTree(Object)
+     */
+    @NonNull
+    public static JsonNode toJson(@NonNull Object object) {
+        return getObjectMapper().valueToTree(object);
+    }
+
+    /**
+     * Serializes an object to a JSON string.
+     *
      * @return the JSON string or the empty string if the object can not be serialized.
      * @see ObjectMapper#writeValueAsString(Object)
      */
     @NonNull
-    public static String toJson(@NonNull Object object) {
+    public static String toJsonString(@NonNull Object object) {
         try {
             return getObjectMapper().writeValueAsString(object);
         } catch (JsonProcessingException e) {

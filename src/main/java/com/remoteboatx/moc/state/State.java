@@ -96,7 +96,7 @@ public class State {
         vessels.get(vesselId).setConning(conning);
 
         // TODO: Format message to frontend properly.
-        sendMessageToFrontends(vesselId, String.format("{\"conning\": %s}", JsonUtil.toJson(conning)));
+        sendMessageToFrontends(vesselId, String.format("{\"conning\": %s}", JsonUtil.toJsonString(conning)));
     }
 
     private void sendMessageToFrontends(String vesselId, String message) {

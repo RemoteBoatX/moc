@@ -37,7 +37,7 @@ public class VrgpMessage {
      */
     @NonNull
     public String toJson() {
-        return JsonUtil.toJson(this);
+        return JsonUtil.toJsonString(this);
     }
 
     /**

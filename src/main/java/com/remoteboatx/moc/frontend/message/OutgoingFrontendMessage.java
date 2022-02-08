@@ -1,5 +1,6 @@
 package com.remoteboatx.moc.frontend.message;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.remoteboatx.moc.vrgp.message.util.JsonUtil;
 import org.springframework.lang.NonNull;
 
@@ -17,7 +18,12 @@ public class OutgoingFrontendMessage {
      */
     @NonNull
     public String toJson() {
-        return JsonUtil.toJson(this);
+        final ObjectNode json = JsonUtil.getObjectMapper().createObjectNode();
+        for (String vesselId : vessels.keySet()) {
+            json.set(vesselId, JsonUtil.toJson(vessels.get(vesselId)));
+        }
+        json.put("update", update);
+        return json.toString();
     }
 
     public OutgoingFrontendMessage withVesselUpdate(String vesselId, VesselUpdate vesselUpdate) {

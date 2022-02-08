@@ -1,8 +1,8 @@
 package com.remoteboatx.moc.vrgp.message.handler;
 
-import com.remoteboatx.moc.vrgp.message.LatencyMessage;
 import com.remoteboatx.moc.state.Latency;
 import com.remoteboatx.moc.state.State;
+import com.remoteboatx.moc.vrgp.message.LatencyMessage;
 import com.remoteboatx.moc.websocket.WebSocketAction;
 import com.remoteboatx.moc.websocket.WebSocketReply;
 
@@ -22,17 +22,14 @@ public class LatencyMessageHandler implements VrgpSingleMessageHandler<LatencyMe
         }
     }
 
-    private WebSocketAction handleMessageWithSentAndReceivedTimestamp(
-            String vesselId, LatencyMessage message) {
+    private WebSocketAction handleMessageWithSentAndReceivedTimestamp(String vesselId, LatencyMessage message) {
 
         final long now = Calendar.getInstance().getTimeInMillis();
 
         final long sent = message.getSent();
         final long received = message.getReceived();
 
-        final Latency latency = new Latency();
-        latency.setOutgoing(received - sent);
-        latency.setIncoming(now - received);
+        final Latency latency = new Latency().withOutgoing(received - sent).withIncoming(now - received);
 
         // TODO: This check does not guarantee clock synchronisation. This should be ensured
         //  elsewhere.
@@ -48,21 +45,19 @@ public class LatencyMessageHandler implements VrgpSingleMessageHandler<LatencyMe
         return WebSocketAction.NONE;
     }
 
-    private WebSocketAction handleMessageWithSentTimestamp(
-            String vesselId, LatencyMessage message) {
+    private WebSocketAction handleMessageWithSentTimestamp(String vesselId, LatencyMessage message) {
 
         final long now = Calendar.getInstance().getTimeInMillis();
 
         final long sent = message.getSent();
         if (sent < 0) {
-            throw new IllegalArgumentException("\"sent\" has to be a numerical value in the " +
-                    "\"time\" message.");
+            throw new IllegalArgumentException("\"sent\" has to be a numerical value in the " + "\"time\" message.");
         }
 
         // TODO: What to do if state currently holds incoming AND outgoing latency but with this
         //  update only incoming latency is known? Either outgoing stays as is or is forgotten.
         final Latency latency = new Latency();
-        latency.setIncoming(now - sent);
+        latency.withIncoming(now - sent);
 
         // TODO: This check does not guarantee clock synchronisation. This should be ensured
         //  elsewhere.

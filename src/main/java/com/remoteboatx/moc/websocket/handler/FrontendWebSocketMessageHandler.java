@@ -19,6 +19,7 @@ public class FrontendWebSocketMessageHandler {
 
     void addFrontend(WebSocketSession frontend) {
         connections.add(frontend);
+        // TODO: Send current state.
     }
 
     void removeFrontend(WebSocketSession frontend) {

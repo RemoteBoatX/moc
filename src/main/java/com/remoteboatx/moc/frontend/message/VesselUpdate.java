@@ -19,6 +19,22 @@ public class VesselUpdate {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Conning conning;
 
+    public Boolean getConnected() {
+        return connected;
+    }
+
+    public Latency getLatency() {
+        return latency;
+    }
+
+    public VesselInformation getVessel() {
+        return vessel;
+    }
+
+    public Conning getConning() {
+        return conning;
+    }
+
     public VesselUpdate withConnected(Boolean connected) {
         this.connected = connected;
         return this;

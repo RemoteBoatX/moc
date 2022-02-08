@@ -1,34 +1,40 @@
 package com.remoteboatx.moc.state;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  * Model of the latency between the MOC and a vessel including the latency of incoming and outgoing messages as well as
  * a round trip latency for messages.
  */
 public class Latency {
 
-    private long incoming = -1;
+    private Long incoming;
 
-    private long outgoing = -1;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Long outgoing;
 
-    public long getIncoming() {
+    public Long getIncoming() {
         return incoming;
     }
 
-    public void setIncoming(long incoming) {
+    public Latency withIncoming(long incoming) {
         this.incoming = incoming;
+        return this;
     }
 
-    public long getOutgoing() {
+    public Long getOutgoing() {
         return outgoing;
     }
 
-    public void setOutgoing(long outgoing) {
+    public Latency withOutgoing(long outgoing) {
         this.outgoing = outgoing;
+        return this;
     }
 
-    public long getRoundTrip() {
-        if (incoming < 0 || outgoing < 0) {
-            return -1;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public Long getRoundTrip() {
+        if (incoming == null || outgoing == null) {
+            return null;
         }
 
         return incoming + outgoing;
