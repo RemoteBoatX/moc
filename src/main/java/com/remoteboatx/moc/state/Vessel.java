@@ -4,6 +4,9 @@ import com.remoteboatx.moc.frontend.message.VesselUpdate;
 import com.remoteboatx.moc.vrgp.message.VesselInformation;
 import com.remoteboatx.moc.vrgp.message.stream.Conning;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Model of the static and dynamic information the MOC holds about a vessel.
  */
@@ -15,8 +18,14 @@ class Vessel {
 
     private Conning conning;
 
+    private List<Status> statuses = new ArrayList<>();
+
     VesselUpdate getAsVesselUpdate() {
         return new VesselUpdate().withLatency(latency).withVesselInformation(vesselInformation).withConning(conning);
+    }
+
+    Latency getLatency() {
+        return latency;
     }
 
     void setLatency(Latency latency) {
@@ -29,5 +38,13 @@ class Vessel {
 
     public void setConning(Conning conning) {
         this.conning = conning;
+    }
+
+    public List<Status> getStatuses() {
+        return statuses;
+    }
+
+    public void setStatuses(List<Status> statuses) {
+        this.statuses = statuses;
     }
 }
