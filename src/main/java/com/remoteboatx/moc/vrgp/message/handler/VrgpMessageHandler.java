@@ -1,11 +1,13 @@
 package com.remoteboatx.moc.vrgp.message.handler;
 
 import com.remoteboatx.moc.vrgp.message.VrgpMessage;
+import com.remoteboatx.moc.vrgp.message.status.StatusMessage;
 import com.remoteboatx.moc.websocket.WebSocketAction;
 import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 // TODO: Maybe implement VrgpSingleMessageHandler and make List<WebSocketAction> implement WebSocketAction.
 
@@ -19,6 +21,8 @@ public class VrgpMessageHandler {
     private final ConningMessageHandler conningMessageHandler = new ConningMessageHandler();
 
     private final LatencyMessageHandler latencyMessageHandler = new LatencyMessageHandler();
+
+    private final StatusMessageHandler statusMessageHandler = new StatusMessageHandler();
 
     private final ByeMessageHandler byeMessageHandler = new ByeMessageHandler();
 
@@ -44,6 +48,12 @@ public class VrgpMessageHandler {
         }
         if (message.getConning() != null) {
             result.add(conningMessageHandler.handleMessage(vesselId, message.getConning()));
+        }
+        final Map<StatusMessage.Type, StatusMessage> statusMessages = message.getStatusMessages();
+        if (!statusMessages.isEmpty()) {
+            // TODO: Pass type to handler.
+            statusMessages.forEach(
+                    (type, statusMessage) -> statusMessageHandler.handleMessage(vesselId, statusMessage));
         }
 
         return result;
