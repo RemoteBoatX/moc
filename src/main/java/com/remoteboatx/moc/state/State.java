@@ -1,11 +1,13 @@
 package com.remoteboatx.moc.state;
 
+import com.remoteboatx.moc.frontend.message.OutgoingFrontendMessage;
+import com.remoteboatx.moc.frontend.message.VesselUpdate;
+import com.remoteboatx.moc.vrgp.message.VesselInformation;
 import com.remoteboatx.moc.vrgp.message.stream.Conning;
-import com.remoteboatx.moc.vrgp.message.util.JsonUtil;
+import com.remoteboatx.moc.vrgp.message.util.StreamsUtil;
 import com.remoteboatx.moc.websocket.handler.FrontendWebSocketMessageHandler;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,8 +44,9 @@ public class State {
     public void addVessel(String vesselId) {
         vessels.put(vesselId, new Vessel());
 
-        // TODO: Format messages to frontend properly.
-        frontendMessageHandler.sendMessage(String.format("{\"%s\": {\"connected\": true}}", vesselId));
+        frontendMessageHandler.sendMessage(
+                new OutgoingFrontendMessage().withVesselUpdate(vesselId, new VesselUpdate().withConnected(true))
+                        .toJson());
     }
 
     /**
@@ -52,8 +55,9 @@ public class State {
     public void removeVessel(String vesselId) {
         vessels.remove(vesselId);
 
-        // TODO: Format messages to frontend properly.
-        frontendMessageHandler.sendMessage(String.format("{\"%s\": {\"connected\": false}}", vesselId));
+        frontendMessageHandler.sendMessage(
+                new OutgoingFrontendMessage().withVesselUpdate(vesselId, new VesselUpdate().withConnected(false))
+                        .toJson());
     }
 
     /**
@@ -63,30 +67,19 @@ public class State {
         // TODO: What to do when only incoming latency is updated?
         vessels.get(vesselId).setLatency(latency);
 
-        // TODO: Format messages to frontend properly using latency class.
-        final String latencyMessage = String.format("outgoing: %d, incoming: %d, round trip: %d", latency.getOutgoing(),
-                latency.getIncoming(), latency.getRoundTrip());
-        sendMessageToFrontends(vesselId, String.format("{\"latency\": \"%s\"}", latencyMessage));
+        frontendMessageHandler.sendMessage(
+                new OutgoingFrontendMessage().withVesselUpdate(vesselId, new VesselUpdate().withLatency(latency))
+                        .toJson());
     }
 
     /**
      * Updates the currently available information streams of a vessel.
      */
-    public void updateAvailableStreams(String vesselId, List<String> availableStreams) {
-        vessels.get(vesselId).setAvailableStreams(availableStreams);
+    public void updateVesselInformation(String vesselId, VesselInformation vesselInformation) {
+        vessels.get(vesselId).setAvailableStreams(StreamsUtil.getAvailableStreams(vesselInformation.getStreams()));
 
-        // TODO: Format messages to frontend properly using latency class.
-        final StringBuilder availableStreamsMessage = new StringBuilder("[");
-        for (String stream : availableStreams) {
-            availableStreamsMessage.append("\"");
-            availableStreamsMessage.append(stream);
-            availableStreamsMessage.append("\",");
-        }
-        if (!availableStreams.isEmpty()) {
-            availableStreamsMessage.deleteCharAt(availableStreamsMessage.length() - 1);
-        }
-        availableStreamsMessage.append("]");
-        sendMessageToFrontends(vesselId, String.format("{\"streams\": %s}", availableStreamsMessage));
+        frontendMessageHandler.sendMessage(new OutgoingFrontendMessage().withVesselUpdate(vesselId,
+                new VesselUpdate().withVesselInformation(vesselInformation)).toJson());
     }
 
     /**
@@ -95,11 +88,8 @@ public class State {
     public void updateConning(String vesselId, Conning conning) {
         vessels.get(vesselId).setConning(conning);
 
-        // TODO: Format message to frontend properly.
-        sendMessageToFrontends(vesselId, String.format("{\"conning\": %s}", JsonUtil.toJsonString(conning)));
-    }
-
-    private void sendMessageToFrontends(String vesselId, String message) {
-        frontendMessageHandler.sendMessage(String.format("{\"%s\": %s}", vesselId, message));
+        frontendMessageHandler.sendMessage(
+                new OutgoingFrontendMessage().withVesselUpdate(vesselId, new VesselUpdate().withConning(conning))
+                        .toJson());
     }
 }
