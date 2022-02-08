@@ -2,7 +2,7 @@ package com.remoteboatx.moc.frontend.message;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.remoteboatx.moc.state.Latency;
-import com.remoteboatx.moc.vrgp.message.VesselInformationMessage;
+import com.remoteboatx.moc.vrgp.message.VesselInformation;
 import com.remoteboatx.moc.vrgp.message.stream.Conning;
 
 public class VesselUpdate {
@@ -14,7 +14,7 @@ public class VesselUpdate {
     private Latency latency;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private VesselInformationMessage vessel;
+    private VesselInformation vessel;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Conning conning;
@@ -29,7 +29,7 @@ public class VesselUpdate {
         return this;
     }
 
-    public VesselUpdate withVesselInformation(VesselInformationMessage vesselInformation) {
+    public VesselUpdate withVesselInformation(VesselInformation vesselInformation) {
         this.vessel = vesselInformation;
         return this;
     }

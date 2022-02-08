@@ -12,7 +12,7 @@ import org.springframework.lang.Nullable;
 public class VrgpMessage {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private VesselInformationMessage vessel;
+    private VesselInformation vessel;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Conning conning;
@@ -44,7 +44,7 @@ public class VrgpMessage {
      * Returns the vessel message included in this VrgpMessage, or null, if no such message was included.
      */
     @Nullable
-    public VesselInformationMessage getVessel() {
+    public VesselInformation getVessel() {
         return vessel;
     }
 

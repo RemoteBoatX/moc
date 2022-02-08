@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * JSON model of the VRGP vessel message that includes mostly static information about the vessel.
  */
-public class VesselInformationMessage implements VrgpSingleMessage {
+public class VesselInformation implements VrgpSingleMessage {
 
     @JsonProperty(required = true)
     private Streams streams;
