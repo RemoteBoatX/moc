@@ -15,15 +15,19 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-               sh 'make'
-               archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
+                script{
+                    sh 'make'
+                    archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
+                }
             }
         }
       
         stage('Test') {
             steps {
-                sh 'make check || true'
-                junit '**/target/*.xml'
+                script{
+                    sh 'make check || true'
+                    junit '**/target/*.xml'
+                }
             }
         }
         stage('Deploy'){
