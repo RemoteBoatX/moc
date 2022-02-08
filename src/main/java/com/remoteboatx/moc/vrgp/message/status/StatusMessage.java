@@ -15,4 +15,8 @@ public class StatusMessage implements VrgpSingleMessage {
     private Long acknowledged;
 
     // TODO: Additional properties.
+
+    public enum Type {
+        EMERGENCY, ALARM, WARNING, CAUTION, INFO, DEBUG
+    }
 }

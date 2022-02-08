@@ -18,7 +18,7 @@ class Vessel {
 
     private Conning conning;
 
-    private List<Status> statuses = new ArrayList<>();
+    private List<Status> status = new ArrayList<>();
 
     VesselUpdate getAsVesselUpdate() {
         return new VesselUpdate().withLatency(latency).withVesselInformation(vesselInformation).withConning(conning);
@@ -40,11 +40,11 @@ class Vessel {
         this.conning = conning;
     }
 
-    public List<Status> getStatuses() {
-        return statuses;
+    public List<Status> getStatus() {
+        return status;
     }
 
-    public void setStatuses(List<Status> statuses) {
-        this.statuses = statuses;
+    public void setStatus(List<Status> status) {
+        this.status = status;
     }
 }

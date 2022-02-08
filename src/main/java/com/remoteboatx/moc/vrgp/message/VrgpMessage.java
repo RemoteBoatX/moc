@@ -1,10 +1,15 @@
 package com.remoteboatx.moc.vrgp.message;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.remoteboatx.moc.vrgp.message.status.StatusMessage;
 import com.remoteboatx.moc.vrgp.message.stream.Conning;
 import com.remoteboatx.moc.vrgp.message.util.JsonUtil;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * JSON model of a VRGP WebSocket message which can include any message(s) defined in the VRGP specification.
@@ -19,6 +24,24 @@ public class VrgpMessage {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private LatencyMessage time;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private StatusMessage emergency;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private StatusMessage alarm;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private StatusMessage warning;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private StatusMessage caution;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private StatusMessage info;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private StatusMessage debug;
 
     // TODO: Ask Robert what the bye message should include and adjust ByeMessage accordingly.
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -70,6 +93,27 @@ public class VrgpMessage {
     public VrgpMessage withTime(@NonNull LatencyMessage latencyMessage) {
         time = latencyMessage;
         return this;
+    }
+
+    @JsonIgnore
+    public Map<StatusMessage.Type, StatusMessage> getStatusMessages() {
+        final Map<StatusMessage.Type, StatusMessage> result = new HashMap<>();
+        putStatusMessageToMapIfNotNull(StatusMessage.Type.EMERGENCY, emergency, result);
+        putStatusMessageToMapIfNotNull(StatusMessage.Type.ALARM, alarm, result);
+        putStatusMessageToMapIfNotNull(StatusMessage.Type.WARNING, warning, result);
+        putStatusMessageToMapIfNotNull(StatusMessage.Type.CAUTION, caution, result);
+        putStatusMessageToMapIfNotNull(StatusMessage.Type.INFO, info, result);
+        putStatusMessageToMapIfNotNull(StatusMessage.Type.DEBUG, debug, result);
+        return result;
+    }
+
+    private void putStatusMessageToMapIfNotNull(StatusMessage.Type type, StatusMessage statusMessage,
+                                                Map<StatusMessage.Type, StatusMessage> statusMessages) {
+
+        if (statusMessage == null) {
+            return;
+        }
+        statusMessages.put(type, statusMessage);
     }
 
     /**
