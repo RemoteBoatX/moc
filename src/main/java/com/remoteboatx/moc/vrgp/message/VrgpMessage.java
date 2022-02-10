@@ -1,6 +1,5 @@
 package com.remoteboatx.moc.vrgp.message;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.remoteboatx.moc.vrgp.message.status.StatusMessage;
 import com.remoteboatx.moc.vrgp.message.stream.Conning;
@@ -8,7 +7,6 @@ import com.remoteboatx.moc.vrgp.message.util.JsonUtil;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -95,16 +93,28 @@ public class VrgpMessage {
         return this;
     }
 
-    @JsonIgnore
-    public Map<StatusMessage.Type, StatusMessage> getStatusMessages() {
-        final Map<StatusMessage.Type, StatusMessage> result = new HashMap<>();
-        putStatusMessageToMapIfNotNull(StatusMessage.Type.EMERGENCY, emergency, result);
-        putStatusMessageToMapIfNotNull(StatusMessage.Type.ALARM, alarm, result);
-        putStatusMessageToMapIfNotNull(StatusMessage.Type.WARNING, warning, result);
-        putStatusMessageToMapIfNotNull(StatusMessage.Type.CAUTION, caution, result);
-        putStatusMessageToMapIfNotNull(StatusMessage.Type.INFO, info, result);
-        putStatusMessageToMapIfNotNull(StatusMessage.Type.DEBUG, debug, result);
-        return result;
+    public StatusMessage getEmergency() {
+        return emergency;
+    }
+
+    public StatusMessage getAlarm() {
+        return alarm;
+    }
+
+    public StatusMessage getWarning() {
+        return warning;
+    }
+
+    public StatusMessage getCaution() {
+        return caution;
+    }
+
+    public StatusMessage getInfo() {
+        return info;
+    }
+
+    public StatusMessage getDebug() {
+        return debug;
     }
 
     private void putStatusMessageToMapIfNotNull(StatusMessage.Type type, StatusMessage statusMessage,

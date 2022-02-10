@@ -1,13 +1,11 @@
 package com.remoteboatx.moc.vrgp.message.handler;
 
 import com.remoteboatx.moc.vrgp.message.VrgpMessage;
-import com.remoteboatx.moc.vrgp.message.status.StatusMessage;
 import com.remoteboatx.moc.websocket.WebSocketAction;
 import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 // TODO: Maybe implement VrgpSingleMessageHandler and make List<WebSocketAction> implement WebSocketAction.
 
@@ -17,10 +15,15 @@ import java.util.Map;
 public class VrgpMessageHandler {
 
     private final List<VrgpSingleMessageHandler<?>> singleMessageHandlers = new ArrayList<>() {{
+        add(new EmergencyMessageHandler());
+        add(new AlarmMessageHandler());
+        add(new WarningMessageHandler());
+        add(new CautionMessageHandler());
+        add(new InfoMessageHandler());
+        add(new DebugMessageHandler());
         add(new VesselInformationMessageHandler());
         add(new ConningMessageHandler());
         add(new LatencyMessageHandler());
-        add(new StatusMessageHandler());
         add(new ByeMessageHandler());
     }};
 
@@ -37,12 +40,6 @@ public class VrgpMessageHandler {
 
         for (VrgpSingleMessageHandler<?> singleMessageHandler : singleMessageHandlers) {
             result.add(singleMessageHandler.handleMessage(vesselId, message));
-        }
-        final Map<StatusMessage.Type, StatusMessage> statusMessages = message.getStatusMessages();
-        if (!statusMessages.isEmpty()) {
-            // TODO: Pass type to handler.
-            statusMessages.forEach(
-                    (type, statusMessage) -> statusMessageHandler.handleMessage(vesselId, statusMessage));
         }
 
         return result;
