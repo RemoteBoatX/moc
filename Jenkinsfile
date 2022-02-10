@@ -17,25 +17,15 @@ pipeline {
     }
 
     stages {
-        stage ('Initialize') {
-            steps {
-                sh '''
-                    echo "PATH = ${PATH}"
-                    echo "M2_HOME = ${M2_HOME}"
-                '''
-            }
-        }
-
         stage('Build') {
             steps {
                 script{
-                    sh 'mvn clean package -Dmaven.test.failure.ignore=true'
+                    sh 'mvn clean package -Dmaven.test.skip=true'
                 }
             }
 
             post {
                 success {
-                    junit '**/target/surefire-reports/TEST-*.xml'
                     archiveArtifacts 'target/*.jar'
                 }
             }
@@ -44,8 +34,12 @@ pipeline {
         stage('Test') {
             steps {
                 script{
-                    echo 'Test phase...'
+                    sh 'mvn test'
                 }
+            }
+
+            post {
+                junit '**/target/surefire-reports/TEST-*.xml'
             }
         }
 
@@ -59,12 +53,12 @@ pipeline {
         }
     }
 
-  post {
-    success {
-        setBuildStatus("Build succeeded", "SUCCESS");
+    post {
+        success {
+            setBuildStatus("Build succeeded", "SUCCESS");
+        }
+        failure {
+            setBuildStatus("Build failed", "FAILURE");
+        }
     }
-    failure {
-        setBuildStatus("Build failed", "FAILURE");
-    }
-  }   
  }
