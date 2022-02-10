@@ -2,7 +2,6 @@ package com.remoteboatx.moc.vrgp.message.handler;
 
 import com.remoteboatx.moc.state.State;
 import com.remoteboatx.moc.vrgp.message.VesselInformation;
-import com.remoteboatx.moc.vrgp.message.VesselInformationMessage;
 import com.remoteboatx.moc.vrgp.message.VrgpMessage;
 import com.remoteboatx.moc.websocket.WebSocketAction;
 
@@ -20,7 +19,7 @@ public class VesselInformationMessageHandler implements VrgpSingleMessageHandler
     }
 
     @Override
-    public Function<VrgpMessage, VesselInformationMessage> getSingleMessage() {
+    public Function<VrgpMessage, VesselInformation> getSingleMessage() {
         return VrgpMessage::getVessel;
     }
 }
