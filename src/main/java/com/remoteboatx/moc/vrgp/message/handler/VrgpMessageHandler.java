@@ -16,15 +16,13 @@ import java.util.Map;
  */
 public class VrgpMessageHandler {
 
-    private final VesselInformationMessageHandler vesselMessageHandler = new VesselInformationMessageHandler();
-
-    private final ConningMessageHandler conningMessageHandler = new ConningMessageHandler();
-
-    private final LatencyMessageHandler latencyMessageHandler = new LatencyMessageHandler();
-
-    private final StatusMessageHandler statusMessageHandler = new StatusMessageHandler();
-
-    private final ByeMessageHandler byeMessageHandler = new ByeMessageHandler();
+    private final List<VrgpSingleMessageHandler<?>> singleMessageHandlers = new ArrayList<>() {{
+        add(new VesselInformationMessageHandler());
+        add(new ConningMessageHandler());
+        add(new LatencyMessageHandler());
+        add(new StatusMessageHandler());
+        add(new ByeMessageHandler());
+    }};
 
     /**
      * Handles a {@link VrgpMessage}.
@@ -37,17 +35,8 @@ public class VrgpMessageHandler {
     public List<WebSocketAction> handleMessage(String vesselId, @NonNull VrgpMessage message) {
         final List<WebSocketAction> result = new ArrayList<>();
 
-        if (message.getVessel() != null) {
-            result.add(vesselMessageHandler.handleMessage(vesselId, message.getVessel()));
-        }
-        if (message.getTime() != null) {
-            result.add(latencyMessageHandler.handleMessage(vesselId, message.getTime()));
-        }
-        if (message.getBye() != null) {
-            result.add(byeMessageHandler.handleMessage(vesselId, message.getBye()));
-        }
-        if (message.getConning() != null) {
-            result.add(conningMessageHandler.handleMessage(vesselId, message.getConning()));
+        for (VrgpSingleMessageHandler<?> singleMessageHandler : singleMessageHandlers) {
+            result.add(singleMessageHandler.handleMessage(vesselId, message));
         }
         final Map<StatusMessage.Type, StatusMessage> statusMessages = message.getStatusMessages();
         if (!statusMessages.isEmpty()) {
