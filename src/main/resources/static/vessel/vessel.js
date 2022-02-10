@@ -144,3 +144,18 @@ function sendConning() {
     };
     ws.send(JSON.stringify(conningMessage));
 }
+
+function sendStatus() {
+    const statusType = document.getElementById("statusType").value;
+    const status = document.getElementById("status").value;
+    const statusMessage = {};
+    statusMessage[statusType] = {
+        id: getRandomHexString(20),
+        category: status
+    }
+    ws.send(JSON.stringify(statusMessage));
+}
+
+function getRandomHexString(size) {
+    return [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+}

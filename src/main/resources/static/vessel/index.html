@@ -9,9 +9,16 @@
     <script src="vessel.js"></script>
 </head>
 <body>
+<div>
     <input id="connectButton" type="button" value="Connect" onclick="connect()">
     <input id="disconnectButton" type="button" value="Disconnect" onclick="disconnect()" disabled>
     <input id="conningButton" type="button" value="Send conning" onclick="sendConning()" disabled>
-    <div id="messages"></div>
+</div>
+<div>
+    <input id="statusType" type="text" placeholder="emergency, alarm, warning, caution, info, debug">
+    <input id="status" type="text" placeholder="status message">
+    <input id="sendStatusButton" type="button" value="Send status" onclick="sendStatus()">
+</div>
+<div id="messages"></div>
 </body>
 </html>
