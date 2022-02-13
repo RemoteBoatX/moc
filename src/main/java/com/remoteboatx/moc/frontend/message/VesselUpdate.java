@@ -2,8 +2,11 @@ package com.remoteboatx.moc.frontend.message;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.remoteboatx.moc.state.Latency;
+import com.remoteboatx.moc.vrgp.message.Status;
 import com.remoteboatx.moc.vrgp.message.VesselInformation;
 import com.remoteboatx.moc.vrgp.message.stream.Conning;
+
+import java.util.List;
 
 public class VesselUpdate {
 
@@ -19,6 +22,11 @@ public class VesselUpdate {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Conning conning;
 
+    // TODO: Discuss frontend API for status updates.
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private List<Status> statuses;
+
     public Boolean getConnected() {
         return connected;
     }
@@ -33,6 +41,10 @@ public class VesselUpdate {
 
     public Conning getConning() {
         return conning;
+    }
+
+    public List<Status> getStatuses() {
+        return statuses;
     }
 
     public VesselUpdate withConnected(Boolean connected) {
@@ -52,6 +64,11 @@ public class VesselUpdate {
 
     public VesselUpdate withConning(Conning conning) {
         this.conning = conning;
+        return this;
+    }
+
+    public VesselUpdate withStatuses(List<Status> statuses) {
+        this.statuses = statuses;
         return this;
     }
 }

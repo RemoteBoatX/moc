@@ -151,7 +151,8 @@ function sendStatus() {
     const statusMessage = {};
     statusMessage[statusType] = {
         id: getRandomHexString(20),
-        category: status
+        category: status,
+        raised: Date.now()
     }
     ws.send(JSON.stringify(statusMessage));
 }

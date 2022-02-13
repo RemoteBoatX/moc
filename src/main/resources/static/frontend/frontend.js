@@ -36,8 +36,12 @@ function handleMessage(data) {
             handleVesselMessage(vesselId, message.vessel);
         }
         if (message.conning) {
-            console.log("Vessel " + vesselId);
+            console.log("Vessel " + vesselId + " conning:");
             console.log(message.conning);
+        }
+        if (message.statuses) {
+            console.log("Vessel " + vesselId + " statuses:");
+            console.log(message.statuses);
         }
     }
 }

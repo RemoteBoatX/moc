@@ -1,7 +1,6 @@
 package com.remoteboatx.moc.vrgp.message;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.remoteboatx.moc.vrgp.message.status.StatusMessage;
 import com.remoteboatx.moc.vrgp.message.stream.Conning;
 import com.remoteboatx.moc.vrgp.message.util.JsonUtil;
 import org.springframework.lang.NonNull;
@@ -24,22 +23,22 @@ public class VrgpMessage {
     private LatencyMessage time;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private StatusMessage emergency;
+    private Status emergency;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private StatusMessage alarm;
+    private Status alarm;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private StatusMessage warning;
+    private Status warning;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private StatusMessage caution;
+    private Status caution;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private StatusMessage info;
+    private Status info;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private StatusMessage debug;
+    private Status debug;
 
     // TODO: Ask Robert what the bye message should include and adjust ByeMessage accordingly.
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -93,37 +92,37 @@ public class VrgpMessage {
         return this;
     }
 
-    public StatusMessage getEmergency() {
+    public Status getEmergency() {
         return emergency;
     }
 
-    public StatusMessage getAlarm() {
+    public Status getAlarm() {
         return alarm;
     }
 
-    public StatusMessage getWarning() {
+    public Status getWarning() {
         return warning;
     }
 
-    public StatusMessage getCaution() {
+    public Status getCaution() {
         return caution;
     }
 
-    public StatusMessage getInfo() {
+    public Status getInfo() {
         return info;
     }
 
-    public StatusMessage getDebug() {
+    public Status getDebug() {
         return debug;
     }
 
-    private void putStatusMessageToMapIfNotNull(StatusMessage.Type type, StatusMessage statusMessage,
-                                                Map<StatusMessage.Type, StatusMessage> statusMessages) {
+    private void putStatusMessageToMapIfNotNull(Status.Type type, Status status,
+                                                Map<Status.Type, Status> statusMessages) {
 
-        if (statusMessage == null) {
+        if (status == null) {
             return;
         }
-        statusMessages.put(type, statusMessage);
+        statusMessages.put(type, status);
     }
 
     /**

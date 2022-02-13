@@ -2,6 +2,7 @@ package com.remoteboatx.moc.state;
 
 import com.remoteboatx.moc.frontend.message.OutgoingFrontendMessage;
 import com.remoteboatx.moc.frontend.message.VesselUpdate;
+import com.remoteboatx.moc.vrgp.message.Status;
 import com.remoteboatx.moc.vrgp.message.VesselInformation;
 import com.remoteboatx.moc.vrgp.message.stream.Conning;
 import com.remoteboatx.moc.websocket.handler.FrontendWebSocketMessageHandler;
@@ -99,5 +100,20 @@ public class State {
         frontendMessageHandler.sendMessage(
                 new OutgoingFrontendMessage().withVesselUpdate(vesselId, new VesselUpdate().withConning(conning))
                         .toJson());
+    }
+
+    public void updateStatus(String vesselId, Status status) {
+        final Vessel vessel = vessels.get(vesselId);
+        final Status storedStatus = vessel.getStatus(status.getId());
+
+        if (storedStatus != null) {
+            // If status has been raised before, the vessel can only cancel it.
+            storedStatus.withCancelled(status.getCancelled());
+        } else {
+            vessel.addStatus(status);
+        }
+
+        frontendMessageHandler.sendMessage(new OutgoingFrontendMessage().withVesselUpdate(vesselId,
+                new VesselUpdate().withStatuses(vessel.getStatuses())).toJson());
     }
 }

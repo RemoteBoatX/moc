@@ -1,29 +1,31 @@
 package com.remoteboatx.moc.vrgp.message.handler;
 
+import com.remoteboatx.moc.state.State;
+import com.remoteboatx.moc.vrgp.message.Status;
 import com.remoteboatx.moc.vrgp.message.VrgpMessage;
-import com.remoteboatx.moc.vrgp.message.status.StatusMessage;
 import com.remoteboatx.moc.websocket.WebSocketAction;
 
 import java.util.function.Function;
 
-public abstract class AbstractStatusMessageHandler implements VrgpSingleMessageHandler<StatusMessage> {
+public abstract class AbstractStatusMessageHandler implements VrgpSingleMessageHandler<Status> {
 
-    private final StatusMessage.Type statusType;
+    private final Status.Type statusType;
 
-    private final Function<VrgpMessage, StatusMessage> statusMessageGetter;
+    private final Function<VrgpMessage, Status> statusMessageGetter;
 
-    protected AbstractStatusMessageHandler(StatusMessage.Type statusType, Function<VrgpMessage, StatusMessage> statusMessageGetter) {
+    protected AbstractStatusMessageHandler(Status.Type statusType, Function<VrgpMessage, Status> statusMessageGetter) {
         this.statusType = statusType;
         this.statusMessageGetter = statusMessageGetter;
     }
 
     @Override
-    public WebSocketAction handleMessage(String vesselId, StatusMessage message) {
+    public WebSocketAction handleMessage(String vesselId, Status message) {
+        State.getInstance().updateStatus(vesselId, message.withType(statusType));
         return WebSocketAction.NONE;
     }
 
     @Override
-    public final Function<VrgpMessage, StatusMessage> getSingleMessage() {
+    public final Function<VrgpMessage, Status> getSingleMessage() {
         return statusMessageGetter;
     }
 }
