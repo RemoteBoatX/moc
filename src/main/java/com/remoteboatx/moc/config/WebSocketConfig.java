@@ -1,4 +1,4 @@
-package com.remoteboatx.moc;
+package com.remoteboatx.moc.config;
 
 import com.remoteboatx.moc.websocket.handler.WebSocketMessageHandler;
 import com.remoteboatx.moc.websocket.handler.WebSocketMessageHandlerWrapper;
