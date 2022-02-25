@@ -102,7 +102,7 @@ public class State {
                         .toJson());
     }
 
-    public void updateStatus(String vesselId, Status status) {
+    public synchronized void updateStatus(String vesselId, Status status) {
         final Vessel vessel = vessels.get(vesselId);
         final Status storedStatus = vessel.getStatus(status.getId());
 
