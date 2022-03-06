@@ -7,8 +7,6 @@ import org.springframework.lang.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: Maybe implement VrgpSingleMessageHandler and make List<WebSocketAction> implement WebSocketAction.
-
 /**
  * Message handler for {@link VrgpMessage}s which contains specific message handlers for the included VRGP messages.
  */
@@ -22,6 +20,7 @@ public class VrgpMessageHandler {
         add(new InfoMessageHandler());
         add(new DebugMessageHandler());
         add(new VesselInformationMessageHandler());
+        add(new StreamsMessageHandler());
         add(new ConningMessageHandler());
         add(new LatencyMessageHandler());
         add(new ByeMessageHandler());

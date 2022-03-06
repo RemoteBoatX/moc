@@ -3,6 +3,7 @@ package com.remoteboatx.moc.frontend.message;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.remoteboatx.moc.state.Latency;
 import com.remoteboatx.moc.vrgp.message.Status;
+import com.remoteboatx.moc.vrgp.message.Streams;
 import com.remoteboatx.moc.vrgp.message.VesselInformation;
 import com.remoteboatx.moc.vrgp.message.stream.Conning;
 
@@ -18,6 +19,9 @@ public class VesselUpdate {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private VesselInformation vessel;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Streams streams;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Conning conning;
@@ -37,6 +41,10 @@ public class VesselUpdate {
 
     public VesselInformation getVessel() {
         return vessel;
+    }
+
+    public Streams getStreams() {
+        return streams;
     }
 
     public Conning getConning() {
@@ -59,6 +67,11 @@ public class VesselUpdate {
 
     public VesselUpdate withVesselInformation(VesselInformation vesselInformation) {
         this.vessel = vesselInformation;
+        return this;
+    }
+
+    public VesselUpdate withStreams(Streams streams) {
+        this.streams = streams;
         return this;
     }
 

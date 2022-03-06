@@ -6,8 +6,6 @@ import com.remoteboatx.moc.vrgp.message.util.JsonUtil;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
-import java.util.Map;
-
 /**
  * JSON model of a VRGP WebSocket message which can include any message(s) defined in the VRGP specification.
  */
@@ -15,6 +13,9 @@ public class VrgpMessage {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private VesselInformation vessel;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Streams streams;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Conning conning;
@@ -69,6 +70,14 @@ public class VrgpMessage {
     }
 
     /**
+     * Returns the streams message included in this VrgpMessage, or null, if no such message was included.
+     */
+    @Nullable
+    public Streams getStreams() {
+        return streams;
+    }
+
+    /**
      * Returns the conning message included in this VrgpMessage, or null, if no such message was included.
      */
     @Nullable
@@ -114,15 +123,6 @@ public class VrgpMessage {
 
     public Status getDebug() {
         return debug;
-    }
-
-    private void putStatusMessageToMapIfNotNull(Status.Type type, Status status,
-                                                Map<Status.Type, Status> statusMessages) {
-
-        if (status == null) {
-            return;
-        }
-        statusMessages.put(type, status);
     }
 
     /**

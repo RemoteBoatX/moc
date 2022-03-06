@@ -1,8 +1,8 @@
 package com.remoteboatx.moc.state;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.remoteboatx.moc.frontend.message.VesselUpdate;
 import com.remoteboatx.moc.vrgp.message.Status;
+import com.remoteboatx.moc.vrgp.message.Streams;
 import com.remoteboatx.moc.vrgp.message.VesselInformation;
 import com.remoteboatx.moc.vrgp.message.stream.Conning;
 
@@ -20,14 +20,13 @@ class Vessel {
 
     private VesselInformation vesselInformation;
 
+    private Streams streams;
+
     private Conning conning;
 
     VesselUpdate getAsVesselUpdate() {
-        return new VesselUpdate().withLatency(latency).withVesselInformation(vesselInformation).withConning(conning);
-    }
-
-    Latency getLatency() {
-        return latency;
+        return new VesselUpdate().withLatency(latency).withVesselInformation(vesselInformation).withStreams(streams)
+                .withConning(conning);
     }
 
     void setLatency(Latency latency) {
@@ -38,6 +37,10 @@ class Vessel {
         this.vesselInformation = vesselInformation;
     }
 
+    public void setStreams(Streams streams) {
+        this.streams = streams;
+    }
+
     public void setConning(Conning conning) {
         this.conning = conning;
     }
@@ -46,7 +49,6 @@ class Vessel {
         return statuses;
     }
 
-    @JsonIgnore()
     public Status getStatus(String id) {
         return statuses.stream().filter(knownStatus -> knownStatus.getId().equals(id)).findFirst().orElse(null);
     }

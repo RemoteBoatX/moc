@@ -3,6 +3,7 @@ package com.remoteboatx.moc.state;
 import com.remoteboatx.moc.frontend.message.OutgoingFrontendMessage;
 import com.remoteboatx.moc.frontend.message.VesselUpdate;
 import com.remoteboatx.moc.vrgp.message.Status;
+import com.remoteboatx.moc.vrgp.message.Streams;
 import com.remoteboatx.moc.vrgp.message.VesselInformation;
 import com.remoteboatx.moc.vrgp.message.stream.Conning;
 import com.remoteboatx.moc.websocket.handler.FrontendWebSocketMessageHandler;
@@ -89,6 +90,14 @@ public class State {
 
         frontendMessageHandler.sendMessage(new OutgoingFrontendMessage().withVesselUpdate(vesselId,
                 new VesselUpdate().withVesselInformation(vesselInformation)).toJson());
+    }
+
+    public synchronized void updateStreams(String vesselId, Streams streams) {
+        vessels.get(vesselId).setStreams(streams);
+
+        frontendMessageHandler.sendMessage(
+                new OutgoingFrontendMessage().withVesselUpdate(vesselId, new VesselUpdate().withStreams(streams))
+                        .toJson());
     }
 
     /**
