@@ -32,8 +32,11 @@ function handleMessage(data) {
         if (message.latency) {
             printMessage(vesselId + ": " + JSON.stringify(message.latency));
         }
-        if (message.vessel) {
-            handleVesselMessage(vesselId, message.vessel);
+        if (message.vessel && message.vessel.streams) {
+            handleStreamsMessage(vesselId, message.vessel.streams);
+        }
+        if (message.streams) {
+            handleStreamsMessage(vesselId, message.streams);
         }
         if (message.conning) {
             console.log("Vessel " + vesselId + " conning:");
@@ -83,8 +86,7 @@ function removeVessel(vesselId) {
     buttons.parentNode.removeChild(buttons);
 }
 
-function handleVesselMessage(vesselId, vessel) {
-    const streams = vessel.streams;
+function handleStreamsMessage(vesselId, streams) {
     if (!streams || !Object.keys(streams).length) {
         return;
     }
