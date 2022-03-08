@@ -11,6 +11,8 @@ public class Status implements VrgpSingleMessage {
     @JsonIgnore
     private Status.Type type;
 
+    // TODO: Category has to be one of predefined categories complying with type.
+
     @JsonProperty(required = true)
     private String category;
 
@@ -19,6 +21,8 @@ public class Status implements VrgpSingleMessage {
     private String source;
 
     // TODO: Does a status message contain all previous timestamps or only the newly added one?
+
+    // TODO: One of the following fields must be set.
 
     private String raised;
 
