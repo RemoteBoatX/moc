@@ -114,15 +114,25 @@ public class State {
     public synchronized void updateStatus(String vesselId, Status status) {
         final Vessel vessel = vessels.get(vesselId);
         final Status storedStatus = vessel.getStatus(status.getId());
+        final VesselUpdate vesselUpdate = new VesselUpdate();
 
         if (storedStatus != null) {
-            // If status has been raised before, the vessel can only cancel it.
-            storedStatus.withCancelled(status.getCancelled());
+            if (status.getRaised() != null) {
+                storedStatus.withRaised(status.getRaised());
+            }
+            if (status.getAcknowledged() != null) {
+                storedStatus.withAcknowledged(status.getAcknowledged());
+            }
+            if (status.getCancelled() != null) {
+                storedStatus.withCancelled(status.getCancelled());
+            }
+            vesselUpdate.withStatus(storedStatus);
         } else {
             vessel.addStatus(status);
+            vesselUpdate.withStatus(status);
         }
 
-        frontendMessageHandler.sendMessage(new OutgoingFrontendMessage().withVesselUpdate(vesselId,
-                new VesselUpdate().withStatuses(vessel.getStatuses())).toJson());
+        frontendMessageHandler.sendMessage(
+                new OutgoingFrontendMessage().withVesselUpdate(vesselId, vesselUpdate).toJson());
     }
 }

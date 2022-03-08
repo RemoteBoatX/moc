@@ -26,7 +26,7 @@ class Vessel {
 
     VesselUpdate getAsVesselUpdate() {
         return new VesselUpdate().withLatency(latency).withVesselInformation(vesselInformation).withStreams(streams)
-                .withConning(conning);
+                .withConning(conning).withStatuses(statuses);
     }
 
     void setLatency(Latency latency) {
@@ -43,10 +43,6 @@ class Vessel {
 
     public void setConning(Conning conning) {
         this.conning = conning;
-    }
-
-    public List<Status> getStatuses() {
-        return statuses;
     }
 
     public Status getStatus(String id) {

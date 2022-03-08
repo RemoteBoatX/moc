@@ -46,6 +46,10 @@ function handleMessage(data) {
             console.log("Vessel " + vesselId + " statuses:");
             console.log(message.statuses);
         }
+        if (message.status) {
+            console.log("Vessel " + vesselId + " status:");
+            console.log(message.status);
+        }
     }
 }
 

@@ -8,40 +8,59 @@ void setBuildStatus(String message, String state) {
   ]);
 }
 
-
 pipeline {
     agent any
+
+    tools {
+        maven 'Maven 3.8.3'
+        jdk 'jdk11'
+    }
 
     stages {
         stage('Build') {
             steps {
-               // Commands for build
+                script{
+                    sh 'mvn clean package -Dmaven.test.skip=true'
+                }
+            }
+
+            post {
+                success {
+                    archiveArtifacts 'target/*.jar'
+                }
             }
         }
       
         stage('Test') {
             steps {
-                // Commands for testing
+                script{
+                    sh 'mvn test'
+                }
+            }
+
+            post {
+                failure {
+                    junit '**/target/surefire-reports/TEST-*.xml'
+                }
             }
         }
+
         stage('Deploy'){
             steps{
                 script{
-                    if(env.BRANCH_NAME == 'main'){
-                        //Commands for deployment (only in main)
-                    }
+                    sh 'docker build -t moc-server .'
+                    sh 'docker run --rm -p 8080:8080 moc-server'
                 }
             }
         }
     }
-  
-  
-  post {
-    success {
-        setBuildStatus("Build succeeded", "SUCCESS");
+
+    post {
+        success {
+            setBuildStatus("Build succeeded", "SUCCESS");
+        }
+        failure {
+            setBuildStatus("Build failed", "FAILURE");
+        }
     }
-    failure {
-        setBuildStatus("Build failed", "FAILURE");
-    }
-  }   
  }
