@@ -1,9 +1,9 @@
 package com.remoteboatx.moc.state;
 
-import com.remoteboatx.moc.frontend.message.VesselUpdate;
-import com.remoteboatx.moc.vrgp.message.Status;
-import com.remoteboatx.moc.vrgp.message.VesselInformation;
-import com.remoteboatx.moc.vrgp.message.stream.Conning;
+import com.remoteboatx.moc.message.frontend.VesselUpdate;
+import com.remoteboatx.moc.message.vrgp.Conning;
+import com.remoteboatx.moc.message.vrgp.Status;
+import com.remoteboatx.moc.message.vrgp.VesselInformation;
 
 import java.util.ArrayList;
 import java.util.List;

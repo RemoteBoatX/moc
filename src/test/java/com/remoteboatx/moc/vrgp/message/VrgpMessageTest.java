@@ -1,5 +1,7 @@
 package com.remoteboatx.moc.vrgp.message;
 
+import com.remoteboatx.moc.message.vrgp.LatencyMessage;
+import com.remoteboatx.moc.message.vrgp.VrgpMessage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

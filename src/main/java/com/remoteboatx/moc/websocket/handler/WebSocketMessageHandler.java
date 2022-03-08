@@ -1,11 +1,10 @@
 package com.remoteboatx.moc.websocket.handler;
 
-import com.remoteboatx.moc.frontend.message.IncomingFrontendMessage;
+import com.remoteboatx.moc.message.frontend.IncomingFrontendMessage;
+import com.remoteboatx.moc.message.vrgp.LatencyMessage;
+import com.remoteboatx.moc.message.vrgp.VrgpMessage;
+import com.remoteboatx.moc.message.vrgp.handler.VrgpMessageHandler;
 import com.remoteboatx.moc.state.State;
-import com.remoteboatx.moc.vrgp.message.LatencyMessage;
-import com.remoteboatx.moc.vrgp.message.VrgpMessage;
-import com.remoteboatx.moc.vrgp.message.handler.VrgpMessageHandler;
-import com.remoteboatx.moc.vrgp.message.util.VrgpMessageUtil;
 import com.remoteboatx.moc.websocket.WebSocketAction;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -122,7 +121,7 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
         }
 
         // Send reply only if there was any reply to the single messages.
-        if (!VrgpMessageUtil.isEmpty(reply)) {
+        if (!reply.isEmpty()) {
             sendMessageToVessel(session, reply);
         }
     }
