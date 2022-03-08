@@ -22,7 +22,8 @@ public class VesselUpdate {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Conning conning;
 
-    // TODO: Discuss frontend API for status updates.
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Status status;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<Status> statuses;
@@ -41,6 +42,10 @@ public class VesselUpdate {
 
     public Conning getConning() {
         return conning;
+    }
+
+    public Status getStatus() {
+        return status;
     }
 
     public List<Status> getStatuses() {
@@ -64,6 +69,11 @@ public class VesselUpdate {
 
     public VesselUpdate withConning(Conning conning) {
         this.conning = conning;
+        return this;
+    }
+
+    public VesselUpdate withStatus(Status status) {
+        this.status = status;
         return this;
     }
 

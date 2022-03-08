@@ -1,6 +1,6 @@
 package com.remoteboatx.moc.vrgp.message;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Status implements VrgpSingleMessage {
@@ -8,49 +8,71 @@ public class Status implements VrgpSingleMessage {
     @JsonProperty(required = true)
     private String id;
 
+    @JsonIgnore
     private Status.Type type;
 
     @JsonProperty(required = true)
     private String category;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String msg;
+
+    private String source;
+
+    // TODO: Does a status message contain all previous timestamps or only the newly added one?
+
     private Long raised;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Long cancelled;
-
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long acknowledged;
 
-    // TODO: Additional properties.
+    private Long cancelled;
 
+    // TODO: Additional properties.
 
     public String getId() {
         return id;
     }
 
-    public Type getType() {
-        return type;
+    @JsonIgnore
+    public String getType() {
+        return type.name().toLowerCase();
     }
 
     public String getCategory() {
         return category;
     }
 
-    public Long getRaised() {
-        return raised;
+    public String getMsg() {
+        return msg;
     }
 
-    public Long getCancelled() {
-        return cancelled;
+    public String getSource() {
+        return source;
+    }
+
+    public Long getRaised() {
+        return raised;
     }
 
     public Long getAcknowledged() {
         return acknowledged;
     }
 
+    public Long getCancelled() {
+        return cancelled;
+    }
+
     public Status withType(Type type) {
         this.type = type;
+        return this;
+    }
+
+    public Status withRaised(Long raised) {
+        this.raised = raised;
+        return this;
+    }
+
+    public Status withAcknowledged(Long acknowledged) {
+        this.acknowledged = acknowledged;
         return this;
     }
 
