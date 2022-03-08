@@ -13,6 +13,12 @@ import java.util.Map;
 public class VrgpMessage {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    private AuthenticateMessage authenticate;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private AuthenticationMessage authentication;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private VesselInformation vessel;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -62,6 +68,22 @@ public class VrgpMessage {
     @JsonIgnore
     public boolean isEmpty() {
         return "{}".equals(toJson());
+    }
+
+    /**
+     * Returns the authenticate message included in this VrgpMessage, or null, if no such message was included.
+     */
+    @Nullable
+    public AuthenticateMessage getAuthenticate() {
+        return authenticate;
+    }
+
+    /**
+     * Returns the authentication message included in this VrgpMessage, or null, if no such message was included.
+     */
+    @Nullable
+    public AuthenticationMessage getAuthentication() {
+        return authentication;
     }
 
     /**

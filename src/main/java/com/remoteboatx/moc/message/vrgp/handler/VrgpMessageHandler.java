@@ -15,15 +15,22 @@ import java.util.List;
 public class VrgpMessageHandler {
 
     private final List<VrgpSingleMessageHandler<?>> singleMessageHandlers = new ArrayList<>() {{
+        add(new AuthenticateMessageHandler());
+        add(new AuthenticationMessageHandler());
+
         add(new EmergencyMessageHandler());
         add(new AlarmMessageHandler());
         add(new WarningMessageHandler());
         add(new CautionMessageHandler());
         add(new InfoMessageHandler());
         add(new DebugMessageHandler());
+
         add(new VesselInformationMessageHandler());
+
         add(new ConningMessageHandler());
+
         add(new LatencyMessageHandler());
+
         add(new ByeMessageHandler());
     }};
 

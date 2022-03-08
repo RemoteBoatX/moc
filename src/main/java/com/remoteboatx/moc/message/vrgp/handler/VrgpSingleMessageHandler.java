@@ -32,7 +32,7 @@ public interface VrgpSingleMessageHandler<T extends VrgpSingleMessage> {
      * @return a WebSocketAction to be executed.
      */
     @NonNull
-    default WebSocketAction handleMessage(String vesselId, VrgpMessage vrgpMessage) {
+    default WebSocketAction handleMessage(String vesselId, @NonNull VrgpMessage vrgpMessage) {
         final T singleMessage = getSingleMessage().apply(vrgpMessage);
         if (singleMessage == null) {
             return WebSocketAction.NONE;
@@ -46,5 +46,6 @@ public interface VrgpSingleMessageHandler<T extends VrgpSingleMessage> {
      * <b>Caution</b>: This is supposed to simply return a getter of VrgpMessage. The actual VrgpMessage that can be
      * accessed in the returned function should not be used for anything else.
      */
+    @NonNull
     Function<VrgpMessage, T> getSingleMessage();
 }
