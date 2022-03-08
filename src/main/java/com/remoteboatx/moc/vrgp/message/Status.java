@@ -20,11 +20,11 @@ public class Status implements VrgpSingleMessage {
 
     // TODO: Does a status message contain all previous timestamps or only the newly added one?
 
-    private Long raised;
+    private String raised;
 
-    private Long acknowledged;
+    private String acknowledged;
 
-    private Long cancelled;
+    private String cancelled;
 
     // TODO: Additional properties.
 
@@ -49,15 +49,15 @@ public class Status implements VrgpSingleMessage {
         return source;
     }
 
-    public Long getRaised() {
+    public String getRaised() {
         return raised;
     }
 
-    public Long getAcknowledged() {
+    public String getAcknowledged() {
         return acknowledged;
     }
 
-    public Long getCancelled() {
+    public String getCancelled() {
         return cancelled;
     }
 
@@ -66,17 +66,17 @@ public class Status implements VrgpSingleMessage {
         return this;
     }
 
-    public Status withRaised(Long raised) {
+    public Status withRaised(String raised) {
         this.raised = raised;
         return this;
     }
 
-    public Status withAcknowledged(Long acknowledged) {
+    public Status withAcknowledged(String acknowledged) {
         this.acknowledged = acknowledged;
         return this;
     }
 
-    public Status withCancelled(Long cancelled) {
+    public Status withCancelled(String cancelled) {
         this.cancelled = cancelled;
         return this;
     }
