@@ -7,6 +7,7 @@ import com.remoteboatx.moc.vrgp.message.VrgpMessage;
 import com.remoteboatx.moc.vrgp.message.handler.VrgpMessageHandler;
 import com.remoteboatx.moc.vrgp.message.util.VrgpMessageUtil;
 import com.remoteboatx.moc.websocket.WebSocketAction;
+import com.remoteboatx.moc.websocket.WebSocketUtil;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -21,10 +22,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Handler for all incoming and outgoing WebSocket messages from both vessels and MOC frontends.
- * It replicates the {@link org.springframework.web.socket.WebSocketHandler WebSocketHandler}
- * distinguishing connections and messages by {@link ConnectionType ConnectionType}, whether they
- * are from a vessel or a frontend.
+ * Handler for all incoming and outgoing WebSocket messages from both vessels and MOC frontends. It replicates the
+ * {@link org.springframework.web.socket.WebSocketHandler WebSocketHandler} distinguishing connections and messages by
+ * {@link ConnectionType ConnectionType}, whether they are from a vessel or a frontend.
  *
  * @see org.springframework.web.socket.WebSocketHandler
  */
@@ -51,8 +51,8 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
         // Periodically send latency message to all vessels.
         Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(() -> {
             for (WebSocketSession vesselSession : vesselConnections.values()) {
-                sendMessageToVessel(vesselSession, new VrgpMessage().withTime(new LatencyMessage()
-                        .withSent(Calendar.getInstance().getTimeInMillis())));
+                sendMessageToVessel(vesselSession, new VrgpMessage().withTime(
+                        new LatencyMessage().withSent(Calendar.getInstance().getTimeInMillis())));
             }
             // Send message immediately and then every five seconds.
         }, 0, 5, TimeUnit.SECONDS);
@@ -73,14 +73,12 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session, ConnectionType type) {
         connectionTypes.put(session, type);
 
-        if (type == ConnectionType.FRONTEND) {
-            frontendMessageHandler.addFrontend(session);
-        } else {
-            vesselConnections.put(session.getId(), session);
-        }
-
         if (type == ConnectionType.VESSEL) {
-            State.getInstance().addVessel(session.getId());
+            final String mmsi = WebSocketUtil.extractMmsiFromWebSocketSession(session);
+            vesselConnections.put(mmsi, session);
+            State.getInstance().addVessel(mmsi);
+        } else {
+            frontendMessageHandler.addFrontend(session);
         }
     }
 
@@ -88,22 +86,18 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         final ConnectionType type = connectionTypes.remove(session);
 
-        if (type == ConnectionType.FRONTEND) {
-            frontendMessageHandler.removeFrontend(session);
-        } else {
-            vesselConnections.remove(session.getId());
-        }
-
         if (type == ConnectionType.VESSEL) {
-            State.getInstance().removeVessel(session.getId());
+            final String mmsi = WebSocketUtil.extractMmsiFromWebSocketSession(session);
+            vesselConnections.remove(mmsi);
+            State.getInstance().removeVessel(mmsi);
+        } else {
+            frontendMessageHandler.removeFrontend(session);
         }
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage textMessage) {
-        // TODO: Parse in handleMessage.
         final String message = textMessage.getPayload();
-
         if (connectionTypes.get(session) == ConnectionType.VESSEL) {
             handleVesselMessage(session, message);
         } else {
@@ -115,8 +109,8 @@ public class WebSocketMessageHandler extends TextWebSocketHandler {
         // Construct a single JSON reply message combining all replies to the received messages.
         final VrgpMessage reply = new VrgpMessage();
 
-        final List<WebSocketAction> actions = vesselMessageHandler.handleMessage(session.getId(),
-                VrgpMessage.fromJson(message));
+        final String mmsi = WebSocketUtil.extractMmsiFromWebSocketSession(session);
+        final List<WebSocketAction> actions = vesselMessageHandler.handleMessage(mmsi, VrgpMessage.fromJson(message));
         for (WebSocketAction action : actions) {
             action.execute(session, reply);
         }

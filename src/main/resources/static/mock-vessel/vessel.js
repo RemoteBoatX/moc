@@ -1,7 +1,7 @@
 let ws;
 
 function connect() {
-    ws = new WebSocket("ws://localhost:8080/vessel");
+    ws = new WebSocket("ws://localhost:8080/vessel/aboat");
     ws.onopen = () => {
         let vesselMessage = {
             vessel: {
