@@ -34,11 +34,11 @@ public class State {
     /**
      * Sets the FrontendMessageHandler to display changes in the state in the connected frontends.
      */
-    public void setFrontendMessageHandler(FrontendWebSocketMessageHandler frontendMessageHandler) {
+    public synchronized void setFrontendMessageHandler(FrontendWebSocketMessageHandler frontendMessageHandler) {
         this.frontendMessageHandler = frontendMessageHandler;
     }
 
-    public OutgoingFrontendMessage getAsFrontendMessage() {
+    public synchronized OutgoingFrontendMessage getAsFrontendMessage() {
         final OutgoingFrontendMessage message = new OutgoingFrontendMessage();
         for (String vesselId : vessels.keySet()) {
             message.withVesselUpdate(vesselId, vessels.get(vesselId).getAsVesselUpdate());
@@ -50,7 +50,7 @@ public class State {
     /**
      * Adds a newly connected vessel to the current State.
      */
-    public void addVessel(String vesselId) {
+    public synchronized void addVessel(String vesselId) {
         vessels.put(vesselId, new Vessel());
 
         frontendMessageHandler.sendMessage(
@@ -61,7 +61,7 @@ public class State {
     /**
      * Removes a disconnected vessel from the current State.
      */
-    public void removeVessel(String vesselId) {
+    public synchronized void removeVessel(String vesselId) {
         vessels.remove(vesselId);
 
         frontendMessageHandler.sendMessage(
@@ -72,7 +72,7 @@ public class State {
     /**
      * Updates the {@link Latency} information of a vessel in the current State.
      */
-    public void updateLatency(String vesselId, Latency latency) {
+    public synchronized void updateLatency(String vesselId, Latency latency) {
         // TODO: What to do when only incoming latency is updated?
         vessels.get(vesselId).setLatency(latency);
 
@@ -84,7 +84,7 @@ public class State {
     /**
      * Updates the currently available information streams of a vessel.
      */
-    public void updateVesselInformation(String vesselId, VesselInformation vesselInformation) {
+    public synchronized void updateVesselInformation(String vesselId, VesselInformation vesselInformation) {
         vessels.get(vesselId).setVesselInformation(vesselInformation);
 
         frontendMessageHandler.sendMessage(new OutgoingFrontendMessage().withVesselUpdate(vesselId,
@@ -94,7 +94,7 @@ public class State {
     /**
      * Updates the {@link Conning} information of a vessel.
      */
-    public void updateConning(String vesselId, Conning conning) {
+    public synchronized void updateConning(String vesselId, Conning conning) {
         vessels.get(vesselId).setConning(conning);
 
         frontendMessageHandler.sendMessage(
@@ -102,18 +102,28 @@ public class State {
                         .toJson());
     }
 
-    public void updateStatus(String vesselId, Status status) {
+    public synchronized void updateStatus(String vesselId, Status status) {
         final Vessel vessel = vessels.get(vesselId);
         final Status storedStatus = vessel.getStatus(status.getId());
+        final VesselUpdate vesselUpdate = new VesselUpdate();
 
         if (storedStatus != null) {
-            // If status has been raised before, the vessel can only cancel it.
-            storedStatus.withCancelled(status.getCancelled());
+            if (status.getRaised() != null) {
+                storedStatus.withRaised(status.getRaised());
+            }
+            if (status.getAcknowledged() != null) {
+                storedStatus.withAcknowledged(status.getAcknowledged());
+            }
+            if (status.getCancelled() != null) {
+                storedStatus.withCancelled(status.getCancelled());
+            }
+            vesselUpdate.withStatus(storedStatus);
         } else {
             vessel.addStatus(status);
+            vesselUpdate.withStatus(status);
         }
 
-        frontendMessageHandler.sendMessage(new OutgoingFrontendMessage().withVesselUpdate(vesselId,
-                new VesselUpdate().withStatuses(vessel.getStatuses())).toJson());
+        frontendMessageHandler.sendMessage(
+                new OutgoingFrontendMessage().withVesselUpdate(vesselId, vesselUpdate).toJson());
     }
 }
